@@ -3,6 +3,17 @@ org-protocol is awesome, but browsers do a pretty poor job of turning a page's H
 * Screenshot
 Here's an example of what you get in Emacs from capturing [[http://kitchingroup.cheme.cmu.edu/blog/2014/07/17/Pandoc-does-org-mode-now/][this page]]:
 [[screenshot.png]]
+* Contents :TOC:
+ - [[#introduction][Introduction]]
+ - [[#screenshot][Screenshot]]
+ - [[#requirements][Requirements]]
+ - [[#bookmarklet][Bookmarklet]]
+     - [[#html-grabbing-function][HTML-grabbing function]]
+     - [[#bookmarklet][Bookmarklet]]
+ - [[#shell-script][Shell script]]
+ - [[#protocol-handler][Protocol-handler]]
+ - [[#notes][Notes]]
+
 * Requirements
 + [[http://orgmode.org/worg/org-contrib/org-protocol.html][org-protocol]]
   This is what connects org-mode to the "outside world" using a MIME protocol handler.  The instructions on the org-protocol page are a bit out of date, so you might want to try [[http://stackoverflow.com/questions/7464951/how-to-make-org-protocol-work/12751732#12751732][these instructions]] instead.
