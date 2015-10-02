@@ -1,0 +1,103 @@
+* Introduction
+org-protocol is awesome, but browsers do a pretty poor job of turning a page's HTML content into plain-text.  However, Pandoc supports converting /from/ HTML /to/ org-mode!  So with a bit of JavaScript and a shell script, we can pipe the HTML from the browser's selection to Pandoc, then send it to Emacs through org-protocol!
+* Screenshot
+Here's an example of what you get in Emacs from capturing [[http://kitchingroup.cheme.cmu.edu/blog/2014/07/17/Pandoc-does-org-mode-now/][this page]]:
+[[screenshot.png]]
+* Requirements
++ [[http://orgmode.org/worg/org-contrib/org-protocol.html][org-protocol]]
+  This is what connects org-mode to the "outside world" using a MIME protocol handler.  The instructions on the org-protocol page are a bit out of date, so you might want to try [[http://stackoverflow.com/questions/7464951/how-to-make-org-protocol-work/12751732#12751732][these instructions]] instead.
++ Pandoc
+  I'm currently using Pandoc from Ubuntu Trusty, at version 1.12.2.1, and it is able to convert from HTML to org.
+* Bookmarklet
+** HTML-grabbing function
+This function gets the HTML from the browser's selection.  It's from [[http://stackoverflow.com/a/6668159/712624][this answer]] on StackOverflow.
+#+BEGIN_SRC js
+function () {
+    var html = "";
+    if (typeof window.getSelection != "undefined") {
+        var sel = window.getSelection();
+        if (sel.rangeCount) {
+            var container = document.createElement("div");
+            for (var i = 0, len = sel.rangeCount; i < len; ++i) {
+                container.appendChild(sel.getRangeAt(i).cloneContents());
+            }
+            html = container.innerHTML;
+        }
+    } else if (typeof document.selection != "undefined") {
+        if (document.selection.type == "Text") {
+            html = document.selection.createRange().htmlText;
+        }
+    }
+    return html;
+}();
+#+END_SRC
+
+Here's a one-line version of it, better for pasting into bookmarklets and such:
+#+BEGIN_SRC js
+function () {var html = ""; if (typeof window.getSelection != "undefined") {var sel = window.getSelection(); if (sel.rangeCount) {var container = document.createElement("div"); for (var i = 0, len = sel.rangeCount; i < len; ++i) {container.appendChild(sel.getRangeAt(i).cloneContents());} html = container.innerHTML;}} else if (typeof document.selection != "undefined") {if (document.selection.type == "Text") {html = document.selection.createRange().htmlText;}} return html;}();
+#+END_SRC
+** Bookmarklet
+That function goes in the bookmarklet, resulting in this:
+#+BEGIN_SRC js
+location.href='org-protocol-html://capture://w/'+encodeURIComponent(content.location.href)+'/'+encodeURIComponent(content.document.title)+'/'+encodeURIComponent(function () {var html = ""; if (typeof content.document.getSelection != "undefined") {var sel = content.document.getSelection(); if (sel.rangeCount) {var container = document.createElement("div"); for (var i = 0, len = sel.rangeCount; i < len; ++i) {container.appendChild(sel.getRangeAt(i).cloneContents());} html = container.innerHTML;}} else if (typeof content.document.selection != "undefined") {if (content.document.selection.type == "Text") {html = content.document.selection.createRange().htmlText;}} return html;}());
+#+END_SRC
+*Note:* I use the Pentadactyl extension, so I had to use ~content.location.href~ instead of ~location.href~, ~content.document~ instead of ~window~, and ~content.document.selection~ instead of ~window.getSelection()~.  This might work in plain Firefox too, or you might need to adjust it.
+* Shell script
+This shell script takes the HTML, sends it through Pandoc (and Python), and then sends it to =org-protocol= through =emacsclient=.  Put it in a file somewhere in your =PATH= named ~org-protocol-capture-html.sh~.
+
+#+NAME: org-protocol-capture-html.sh
+#+BEGIN_SRC sh
+#!/bin/bash
+
+if [[ $@ ]]
+then
+    # Get data from args
+    data="$@"
+else
+    # Get data from STDIN
+    data=$(cat)
+fi
+
+if [[ -z $data ]]
+then
+    # No data; quit
+    exit 1
+fi
+
+# Fix protocol
+data=$(sed 's|^org-protocol-html://|org-protocol://|' <<<"$data")
+
+# Split data
+readarray -t data <<<"$(sed -r 's|^(org-protocol://capture://w/[^/]+/[^/]+/)(.*)|\1\n\2|' <<<"$data")"
+
+start="${data[0]}"
+end="${data[1]}"
+
+# Decode URL-encoded/quoted data
+end=$(python -c "import sys, urllib; print urllib.unquote(' '.join(sys.argv[1:]))" "$end")
+
+# Convert with Pandoc
+end=$(pandoc --no-wrap -f html -t org <<<"$end")
+
+# Reencode data
+end=$(python -c "import sys, urllib; print urllib.quote(' '.join(sys.argv[1:]), safe='')" "$end")
+
+# Send to Emacs
+emacsclient "${start}${end}"
+#+END_SRC
+* Protocol-handler
+Just like with the standard org-protocol setup, you need to add a protocol handler.  Put this in =~/.local/share/applications/org-protocol-capture-html.desktop=, then run ~update-desktop-database ~/.local/share/applications~.
+
+#+NAME: ~/.local/share/applications/org-protocol-capture-html.desktop
+#+BEGIN_SRC conf
+[Desktop Entry]
+Name=org-protocol-html
+Exec=org-protocol-capture-html.sh %u
+Type=Application
+Terminal=false
+Categories=System;
+MimeType=x-scheme-handler/org-protocol-html;
+#+END_SRC
+
+* Notes
+If you wanted to, you could skip the shell script and write an org-protocol sub-protocol handler that called Pandoc from Emacs (or perhaps made use of =pandoc-mode=).  It's probably simpler to do it with the shell script, especially since you have to un-escape and re-escape the HTML around Pandoc, but if you put together a "plain Emacs" solution, please feel free to share it and I'll add it here.
