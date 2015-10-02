@@ -2,6 +2,7 @@
 org-protocol is awesome, but browsers do a pretty poor job of turning a page's HTML content into plain-text.  However, Pandoc supports converting /from/ HTML /to/ org-mode!  So with a bit of JavaScript and a shell script, we can pipe the HTML from the browser's selection to Pandoc, then send it to Emacs through org-protocol!
 * Screenshot
 Here's an example of what you get in Emacs from capturing [[http://kitchingroup.cheme.cmu.edu/blog/2014/07/17/Pandoc-does-org-mode-now/][this page]]:
+
 [[screenshot.png]]
 * Contents :TOC:
  - [[#introduction][Introduction]]
