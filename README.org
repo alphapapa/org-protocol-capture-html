@@ -15,10 +15,8 @@ Here's an example of what you get in Emacs from capturing [[http://kitchingroup.
  - [[#notes][Notes]]
 
 * Requirements
-+ [[http://orgmode.org/worg/org-contrib/org-protocol.html][org-protocol]]
-  This is what connects org-mode to the "outside world" using a MIME protocol handler.  The instructions on the org-protocol page are a bit out of date, so you might want to try [[http://stackoverflow.com/questions/7464951/how-to-make-org-protocol-work/12751732#12751732][these instructions]] instead.
-+ Pandoc
-  I'm currently using Pandoc from Ubuntu Trusty, at version 1.12.2.1, and it is able to convert from HTML to org.
++ *[[http://orgmode.org/worg/org-contrib/org-protocol.html][org-protocol]]*: This is what connects org-mode to the "outside world" using a MIME protocol handler.  The instructions on the org-protocol page are a bit out of date, so you might want to try [[http://stackoverflow.com/questions/7464951/how-to-make-org-protocol-work/12751732#12751732][these instructions]] instead.
++ *Pandoc*: I'm currently using Pandoc from Ubuntu Trusty, at version 1.12.2.1, and it is able to convert from HTML to org.
 * Bookmarklet
 ** HTML-grabbing function
 This function gets the HTML from the browser's selection.  It's from [[http://stackoverflow.com/a/6668159/712624][this answer]] on StackOverflow.
