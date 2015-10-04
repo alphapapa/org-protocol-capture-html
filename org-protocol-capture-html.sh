@@ -7,7 +7,7 @@ url="http://example.com"
 
 # ** Functions
 function urlencode {
-    python -c "import sys, urllib; print urllib.quote(' '.join(sys.argv[1:]), safe='')" "$@"
+    python -c "import sys, urllib; print urllib.quote(sys.stdin.read(), safe='')"
 }
 function usage {
     cat <<EOF
@@ -61,9 +61,9 @@ then
 fi
 
 # ** URL-encode data
-heading=$(urlencode "$heading")
-url=$(urlencode "$url")
-data=$(urlencode "$data")
+heading=$(urlencode <<<"$heading")
+url=$(urlencode <<<"$url")
+data=$(urlencode <<<"$data")
 
 # ** Send to Emacs
 emacsclient "org-protocol://capture-html://$template/$url/$heading/$data"
