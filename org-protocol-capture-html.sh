@@ -9,8 +9,8 @@ url="http://example.com"
 function urlencode {
     python -c "import sys, urllib; print urllib.quote(' '.join(sys.argv[1:]), safe='')" "$@"
 }
- function usage {
-     cat <<EOF
+function usage {
+    cat <<EOF
 org-protocol-capture-html [-t TITLE] [-u URL] [HTML]
 
 Send HTML to Emacs through org-protocol, passing it through Pandoc to
