@@ -52,9 +52,16 @@ Pandoc, converting HTML to Org-mode."
                                 :link url
                                 :description title
                                 :orglink orglink
-                                :initial (buffer-string))
-          (raise-frame)
-          (funcall 'org-capture nil template))))
+                                :initial (buffer-string)))
+        (raise-frame)
+        (funcall 'org-capture nil template)
+
+        ;; Demote page headings in capture buffer to below the
+        ;; top-level Org heading
+        (save-excursion (goto-char (point-min))
+                        (re-search-forward (rx bol "*" (1+ space)) nil t) ; Skip 1st heading
+                        (while (re-search-forward (rx bol "*" (1+ space)) nil t)
+                          (org-demote-subtree)))))
     nil))
 
 (add-to-list 'org-protocol-protocol-alist
