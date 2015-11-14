@@ -23,34 +23,57 @@ Here's an example of what you get in Emacs from capturing [[http://kitchingroup.
 ** HTML-grabbing function
 This function gets the HTML from the browser's selection.  It's from [[http://stackoverflow.com/a/6668159/712624][this answer]] on StackOverflow.
 #+BEGIN_SRC js
-function () {
-    var html = "";
-    if (typeof window.getSelection != "undefined") {
-        var sel = window.getSelection();
-        if (sel.rangeCount) {
-            var container = document.createElement("div");
-            for (var i = 0, len = sel.rangeCount; i < len; ++i) {
-                container.appendChild(sel.getRangeAt(i).cloneContents());
-            }
-            html = container.innerHTML;
-        }
-    } else if (typeof document.selection != "undefined") {
-        if (document.selection.type == "Text") {
-            html = document.selection.createRange().htmlText;
-        }
-    }
-    return html;
-}();
+  function () {
+      var html = "";
+  
+      if (typeof content.document.getSelection != "undefined") {
+          var sel = content.document.getSelection();
+          if (sel.rangeCount) {
+              var container = document.createElement("div");
+              for (var i = 0, len = sel.rangeCount; i < len; ++i) {
+                  container.appendChild(sel.getRangeAt(i).cloneContents());
+              }
+              html = container.innerHTML;
+          }
+      } else if (typeof document.selection != "undefined") {
+          if (document.selection.type == "Text") {
+              html = document.selection.createRange().htmlText;
+          }
+      }
+  
+      var relToAbs = function (href) {
+          var a = content.document.createElement("a");
+          a.href = href;
+          var abs = a.protocol + "//" + a.host + a.pathname + a.search + a.hash;
+          a.remove();
+          return abs;
+      };
+      var elementTypes = [
+          ['a', 'href'],
+          ['img', 'src']
+      ];
+  
+      var div = content.document.createElement('div');
+      div.innerHTML = html;
+  
+      elementTypes.map(function(elementType) {
+          var elements = div.getElementsByTagName(elementType[0]);
+          for (var i = 0; i < elements.length; i++) {
+              elements[i].setAttribute(elementType[1], relToAbs(elements[i].getAttribute(elementType[1])));
+          }
+      });
+      return div.innerHTML;
+  }
 #+END_SRC
 
 Here's a one-line version of it, better for pasting into bookmarklets and such:
 #+BEGIN_SRC js
-function () {var html = ""; if (typeof window.getSelection != "undefined") {var sel = window.getSelection(); if (sel.rangeCount) {var container = document.createElement("div"); for (var i = 0, len = sel.rangeCount; i < len; ++i) {container.appendChild(sel.getRangeAt(i).cloneContents());} html = container.innerHTML;}} else if (typeof document.selection != "undefined") {if (document.selection.type == "Text") {html = document.selection.createRange().htmlText;}} return html;}();
+  function () {var html = ""; if (typeof content.document.getSelection != "undefined") {var sel = content.document.getSelection(); if (sel.rangeCount) {var container = document.createElement("div"); for (var i = 0, len = sel.rangeCount; i < len; ++i) {container.appendChild(sel.getRangeAt(i).cloneContents());} html = container.innerHTML;}} else if (typeof document.selection != "undefined") {if (document.selection.type == "Text") {html = document.selection.createRange().htmlText;}} var relToAbs = function (href) {var a = content.document.createElement("a"); a.href = href; var abs = a.protocol + "//" + a.host + a.pathname + a.search + a.hash; a.remove(); return abs;}; var elementTypes = [['a', 'href'], ['img', 'src']]; var div = content.document.createElement('div'); div.innerHTML = html; elementTypes.map(function(elementType) {var elements = div.getElementsByTagName(elementType[0]); for (var i = 0; i < elements.length; i++) {elements[i].setAttribute(elementType[1], relToAbs(elements[i].getAttribute(elementType[1])));}}); return div.innerHTML;}
 #+END_SRC
 ** Bookmarklet
 That function goes in the bookmarklet, and the =org-protocol= sub-protocol is changed to =capture-html:=, resulting in this:
 #+BEGIN_SRC js
-location.href='org-protocol://capture-html://w/'+encodeURIComponent(content.location.href)+'/'+encodeURIComponent(content.document.title)+'/'+encodeURIComponent(function () {var html = ""; if (typeof content.document.getSelection != "undefined") {var sel = content.document.getSelection(); if (sel.rangeCount) {var container = document.createElement("div"); for (var i = 0, len = sel.rangeCount; i < len; ++i) {container.appendChild(sel.getRangeAt(i).cloneContents());} html = container.innerHTML;}} else if (typeof content.document.selection != "undefined") {if (content.document.selection.type == "Text") {html = content.document.selection.createRange().htmlText;}} return html;}());
+  content.location.href = 'org-protocol://capture-html://w/' + encodeURIComponent(content.location.href) + '/' + encodeURIComponent(content.document.title) + '/' + encodeURIComponent(function () {var html = ""; if (typeof content.document.getSelection != "undefined") {var sel = content.document.getSelection(); if (sel.rangeCount) {var container = document.createElement("div"); for (var i = 0, len = sel.rangeCount; i < len; ++i) {container.appendChild(sel.getRangeAt(i).cloneContents());} html = container.innerHTML;}} else if (typeof document.selection != "undefined") {if (document.selection.type == "Text") {html = document.selection.createRange().htmlText;}} var relToAbs = function (href) {var a = content.document.createElement("a"); a.href = href; var abs = a.protocol + "//" + a.host + a.pathname + a.search + a.hash; a.remove(); return abs;}; var elementTypes = [['a', 'href'], ['img', 'src']]; var div = content.document.createElement('div'); div.innerHTML = html; elementTypes.map(function(elementType) {var elements = div.getElementsByTagName(elementType[0]); for (var i = 0; i < elements.length; i++) {elements[i].setAttribute(elementType[1], relToAbs(elements[i].getAttribute(elementType[1])));}}); return div.innerHTML;}());
 #+END_SRC
 *Note:* I use the Pentadactyl extension, so I had to use ~content.location.href~ instead of ~location.href~, ~content.document~ instead of ~window~, and ~content.document.selection~ instead of ~window.getSelection()~.  This might work in plain Firefox too, or you might need to adjust it.
 * Emacs
