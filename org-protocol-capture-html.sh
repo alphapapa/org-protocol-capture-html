@@ -18,8 +18,8 @@ convert HTML to Org-mode.  HTML may be passed as an argument or
 through STDIN.
 
 Options:
-    -h HEADING   Use HEADING as the Org heading (default: w)
-    -t TEMPLATE  Use the org-capture template with TEMPLATE key
+    -h HEADING   Use HEADING as the Org heading
+    -t TEMPLATE  Use the org-capture template with TEMPLATE key (default: w)
     -u URL       Use URL for the heading link
 EOF
 }
