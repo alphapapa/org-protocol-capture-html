@@ -51,7 +51,8 @@ Pandoc, converting HTML to Org-mode."
                                 :link url
                                 :description title
                                 :orglink orglink
-                                :initial (buffer-string)))
+                                :initial (buffer-string)
+				:annotation (org-make-link-string url title))))
         (raise-frame)
         (funcall 'org-capture nil template)
 
