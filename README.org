@@ -99,7 +99,7 @@ You need a suitable =org-capture= template.  I recommend the following one.  Wha
 #+END_SRC
 
 * Shell script
-The [[org-protocol-capture-html.sh][shell script]] is handy for piping any HTML (or plain-text) content to Org through the shell, but it's not required.
+The [[org-protocol-capture-html.sh][shell script]] is handy for piping any HTML (or plain-text) content to Org through the shell, or downloading and capturing any URL directly (without a browser), but it's not required.
 
 * Changelog
 
