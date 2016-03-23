@@ -43,7 +43,7 @@ Pandoc, converting HTML to Org-mode."
       (insert content)
       (if (not (= 0 (call-process-region
                      (point-min) (point-max)
-                     "pandoc" t t nil "--no-wrap" "-f" "html" "-t" "org")))
+                     "pandoc" t t nil "--wrap=none" "-f" "html" "-t" "org")))
           (message "Pandoc failed: " (buffer-string))
         (progn
           ;; Pandoc succeeded
