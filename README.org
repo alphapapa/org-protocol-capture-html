@@ -12,6 +12,7 @@ Here's an example of what you get in Emacs from capturing [[http://kitchingroup.
      - [[#html-grabbing-function][HTML-grabbing function]]
      - [[#bookmarklet][Bookmarklet]]
  - [[#emacs][Emacs]]
+     - [[#org-capture-template][org-capture Template]]
  - [[#shell-script][Shell script]]
  - [[#to-do][To-Do]]
      - [[#handle-long-chunks-of-html][Handle long chunks of HTML]]
@@ -77,10 +78,23 @@ That function goes in the bookmarklet, and the =org-protocol= sub-protocol is ch
 #+END_SRC
 *Note:* I use the Pentadactyl extension, so I had to use ~content.location.href~ instead of ~location.href~, ~content.document~ instead of ~window~, and ~content.document.selection~ instead of ~window.getSelection()~.  This might work in plain Firefox too, or you might need to adjust it.
 * Emacs
+
 Put =org-protocol-capture-html.el= in your =load-path= and add to your init file:
+
 #+BEGIN_SRC elisp
 (require 'org-protocol-capture-html)
 #+END_SRC
+
+** org-capture Template
+
+You need a suitable =org-capture= template.  I recommend the following one.  Whatever you choose, the default selection key is =w=, so if you want to use a different key, you'll need to modify the script and the bookmarklet.
+
+#+BEGIN_SRC elisp
+("w" "Web site" entry 
+  (file "")
+  "* %a :website:\n\n%U %?\n\n%:initial")
+#+END_SRC
+
 * Shell script
 The [[org-protocol-capture-html.sh][shell script]] is handy for piping any HTML (or plain-text) content to Org through the shell, but it's not required.
 * To-Do
