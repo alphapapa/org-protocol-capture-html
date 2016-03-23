@@ -28,8 +28,8 @@ Pandoc, converting HTML to Org-mode."
 	 (url (org-protocol-sanitize-uri (car parts)))
 	 (type (if (string-match "^\\([a-z]+\\):" url)
 		   (match-string 1 url)))
-	 (title (or (cadr parts) ""))
-	 (content (or (caddr parts) ""))
+	 (title (or (string-trim (cadr parts)) ""))
+	 (content (or (string-trim (caddr parts)) ""))
 	 (orglink (org-make-link-string
 		   url (if (string-match "[^[:space:]]" title) title url)))
 	 (query (or (org-protocol-convert-query-to-plist (cadddr parts)) ""))
