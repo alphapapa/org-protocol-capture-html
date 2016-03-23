@@ -48,6 +48,7 @@ Pandoc, converting HTML to Org-mode."
         (progn
           ;; Pandoc succeeded
           (org-store-link-props :type type
+                                :annotation orglink
                                 :link url
                                 :description title
                                 :orglink orglink
