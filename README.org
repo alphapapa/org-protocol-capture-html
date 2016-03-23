@@ -14,8 +14,11 @@ Here's an example of what you get in Emacs from capturing [[http://kitchingroup.
  - [[#emacs][Emacs]]
      - [[#org-capture-template][org-capture Template]]
  - [[#shell-script][Shell script]]
+ - [[#changelog][Changelog]]
+     - [[#2016-03-23-wed][<2016-03-23 Wed>]]
  - [[#to-do][To-Do]]
      - [[#handle-long-chunks-of-html][Handle long chunks of HTML]]
+     - [[#package-for-melpa][Package for MELPA]]
 
 * Requirements
 + *[[http://orgmode.org/worg/org-contrib/org-protocol.html][org-protocol]]*: This is what connects org-mode to the "outside world" using a MIME protocol handler.  The instructions on the org-protocol page are a bit out of date, so you might want to try [[http://stackoverflow.com/questions/7464951/how-to-make-org-protocol-work/12751732#12751732][these instructions]] instead.
@@ -97,6 +100,18 @@ You need a suitable =org-capture= template.  I recommend the following one.  Wha
 
 * Shell script
 The [[org-protocol-capture-html.sh][shell script]] is handy for piping any HTML (or plain-text) content to Org through the shell, but it's not required.
+
+* Changelog
+
+** <2016-03-23 Wed>
+
++ Add URL downloading to the shell script.  Now you can run =org-protocol-capture-html.sh -u http://example.com= and it will download and capture the page.
++ Add =org-capture= template to the readme.  This will make it much easier for new users.
+
 * To-Do
 ** Handle long chunks of HTML
 If you try to capture too long a chunk of HTML, it will fail with "argument list too long errors" from =emacsclient=.  To work around this will require capturing via STDIN instead of arguments.  Since org-protocol is based on using URLs, this will probably require using a shell script and a new Emacs function, and perhaps another MIME protocol-handler.  Even then, it might still run into problems, because the data is passed to the shell script as an argument in the protocol-handler.  Working around that would probably require a non-protocol-handler-based method using a browser extension to send the HTML directly via STDIN.  Might be possible with Pentadactyl instead of making an entirely new browser extension.  Also, maybe the [[https://addons.mozilla.org/en-US/firefox/addon/org-mode-capture/][Org-mode Capture]] Firefox extension could be extended (...) to do this.
+
+However, most of the time, this is not a problem.
+** Package for MELPA
+This would be nice.
