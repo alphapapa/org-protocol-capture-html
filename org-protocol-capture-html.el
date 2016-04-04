@@ -84,9 +84,8 @@ Pandoc, converting HTML to Org-mode."
 	 (orglink (org-make-link-string
 		   url (if (string-match "[^[:space:]]" title) title url)))
 	 (query (or (org-protocol-convert-query-to-plist (cadddr parts)) ""))
-	 (org-capture-link-is-already-stored t)  ; avoid call to org-store-link
-         (commands '(
-                     ("pandoc" t t nil "--no-wrap" "-f" "html" "-t" "org"))))
+         ;; Avoid call to org-store-link
+	 (org-capture-link-is-already-stored t))
 
     (setq org-stored-links
           (cons (list url title) org-stored-links))
