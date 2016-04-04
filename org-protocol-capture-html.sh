@@ -2,7 +2,8 @@
 
 # * Defaults
 
-heading="Heading"
+heading=" "
+protocol="capture-html"
 template="w"
 
 # * Functions
@@ -36,6 +37,7 @@ contents used.
 
 Options:
     -h, --heading HEADING     Heading
+    -r, --readability         Capture web page article with python-readability
     -t, --template TEMPLATE   org-capture template key (default: w)
     -u, --url URL             URL
 
@@ -50,7 +52,7 @@ function urlencode {
 
 # * Args
 
-args=$(getopt -n "$0" -o dh:t:u: -l debug,help,heading:,template:,url: -- "$@") || exit 1
+args=$(getopt -n "$0" -o dh:rt:u: -l debug,help,heading:,readability,template:,url: -- "$@") || exit 1
 eval set -- "$args"
 
 while true
@@ -67,6 +69,10 @@ do
         -h|--heading)
             shift
             heading="$1"
+            ;;
+        -r|--readability)
+            protocol="capture-readability"
+            readability=true
             ;;
         -t|--template)
             shift
@@ -113,7 +119,7 @@ then
 
     html=$(cat)
 
-elif [[ -n $url ]]
+elif [[ -n $url && ! -n $readability ]]
 then
     debug "Only URL given; downloading..."
 
@@ -124,6 +130,10 @@ then
     heading=$(sed -nr '/<title>/{s|.*<title>([^<]+)</title>.*|\1|i;p;q};' <<<"$html") || heading="A web page with no name"
 
     debug "Using heading: $heading"
+
+elif [[ -n $readability ]]
+then
+    debug "Using readability"
 
 else
     usage
@@ -144,4 +154,4 @@ html=$(urlencode <<<"$html")
 
 # ** Send to Emacs
 
-emacsclient "org-protocol://capture-html://$template/$url/$heading/$html"
+emacsclient "org-protocol://$protocol://$template/$url/$heading/$html"

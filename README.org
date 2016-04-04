@@ -23,6 +23,7 @@ Here's an example of what you get in Emacs from capturing [[http://kitchingroup.
 * Requirements
 + *[[http://orgmode.org/worg/org-contrib/org-protocol.html][org-protocol]]*: This is what connects org-mode to the "outside world" using a MIME protocol handler.  The instructions on the org-protocol page are a bit out of date, so you might want to try [[http://stackoverflow.com/questions/7464951/how-to-make-org-protocol-work/12751732#12751732][these instructions]] instead.
 + *Pandoc*: I'm currently using Pandoc from Ubuntu Trusty, at version 1.12.2.1, and it is able to convert from HTML to org.
++ *[[https://github.com/buriy/python-readability][python-readability]]*: This is optional but very handy.  It lets you automatically capture just the article or main content from a page.
 + The shell script uses =curl= to download URLs (if you use it in that mode).
 * Bookmarklet
 ** HTML-grabbing function

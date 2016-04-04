@@ -1,14 +1,20 @@
 ;;; org-protocol-capture-html --- Capture HTML with org-protocol
 
 ;;; Commentary:
-;; This makes it possible to capture HTML into Org-mode with
-;; org-protocol by passing it through Pandoc to convert the HTML into
-;; Org syntax. You can use a JavaScript bookmarklet to get the HTML
-;; from the browser's selection, such as this:
-;;
-;; content.location.href = 'org-protocol://capture-html://w/' + encodeURIComponent(content.location.href) + '/' + encodeURIComponent(content.document.title) + '/' + encodeURIComponent(function () {var html = ""; if (typeof content.document.getSelection != "undefined") {var sel = content.document.getSelection(); if (sel.rangeCount) {var container = document.createElement("div"); for (var i = 0, len = sel.rangeCount; i < len; ++i) {container.appendChild(sel.getRangeAt(i).cloneContents());} html = container.innerHTML;}} else if (typeof document.selection != "undefined") {if (document.selection.type == "Text") {html = document.selection.createRange().htmlText;}} var relToAbs = function (href) {var a = content.document.createElement("a"); a.href = href; var abs = a.protocol + "//" + a.host + a.pathname + a.search + a.hash; a.remove(); return abs;}; var elementTypes = [['a', 'href'], ['img', 'src']]; var div = content.document.createElement('div'); div.innerHTML = html; elementTypes.map(function(elementType) {var elements = div.getElementsByTagName(elementType[0]); for (var i = 0; i < elements.length; i++) {elements[i].setAttribute(elementType[1], relToAbs(elements[i].getAttribute(elementType[1])));}}); return div.innerHTML;}());
+
+;; This package captures Web pages into Org-mode using Pandoc to
+;; process HTML.  It can also use python-readability to get article
+;; content.
+
+;; These are the helper functions that run in Emacs.  To capture pages
+;; into Emacs, you can use either a browser bookmarklet or the
+;; org-protocol-capture-html.sh shell script.  See the README.org file
+;; for instructions.
 
 ;;; Code:
+
+;;;; Direct-to-Pandoc
+
 (defun org-protocol-capture-html-with-pandoc (data)
   "Process an org-protocol://capture-html:// URL.
 
@@ -52,17 +58,8 @@ Pandoc, converting HTML to Org-mode."
                                 :link url
                                 :description title
                                 :orglink orglink
-                                :initial (buffer-string)))
-        (raise-frame)
-        (funcall 'org-capture nil template)
-
-        ;; Demote page headings in capture buffer to below the
-        ;; top-level Org heading
-        (save-excursion
-          (goto-char (point-min))
-          (re-search-forward (rx bol "*" (1+ space)) nil t) ; Skip 1st heading
-          (while (re-search-forward (rx bol "*" (1+ space)) nil t)
-            (org-demote-subtree)))))
+                                :initial (buffer-string)))))
+    (org-protocol-capture-html-do-capture)
     nil))
 
 (add-to-list 'org-protocol-protocol-alist
@@ -71,5 +68,77 @@ Pandoc, converting HTML to Org-mode."
                :function org-protocol-capture-html-with-pandoc
                :kill-client t))
 
+;;;; Readability
+
+(defun org-protocol-capture-readability (data)
+  "Capture content of URL with readability-lxml Python package."
+
+  (let* ((parts (org-protocol-split-data data t org-protocol-data-separator))
+	 (template (or (and (>= 2 (length (car parts))) (pop parts))
+		       org-protocol-default-template-key))
+	 (url (org-protocol-sanitize-uri (car parts)))
+	 (type (if (string-match "^\\([a-z]+\\):" url)
+		   (match-string 1 url)))
+	 (title (or (string-trim (cadr parts)) ""))
+	 (content (or (string-trim (caddr parts)) ""))
+	 (orglink (org-make-link-string
+		   url (if (string-match "[^[:space:]]" title) title url)))
+	 (query (or (org-protocol-convert-query-to-plist (cadddr parts)) ""))
+	 (org-capture-link-is-already-stored t)  ; avoid call to org-store-link
+         (commands '(
+                     ("pandoc" t t nil "--no-wrap" "-f" "html" "-t" "org"))))
+
+    (setq org-stored-links
+          (cons (list url title) org-stored-links))
+    (kill-new orglink)
+
+    (with-temp-buffer
+      (unless (= 0 (call-process "python" nil '(t t) nil  "-m" "readability.readability" "-u" url))
+        (error "Python readability-lxml script failed: %s" (buffer-string)))
+
+      ;; Get title if necessary
+      (goto-char (point-min))
+      (if (not (string= title ""))
+          (progn
+            ;; Skip first line containing page title; we already have it
+            (delete-region (point) (line-end-position)))
+        ;; Get title
+        (setq title (buffer-substring-no-properties (search-forward "Title:") (line-end-position)))
+        (setq orglink (org-make-link-string url (if (string-match "[^[:space:]]" title) title url))))
+
+      (unless (= 0 (call-process-region (point-min) (point-max) "pandoc" t t nil "--no-wrap" "-f" "html" "-t" "org"))
+        (error "Pandoc failed."))
+
+      (org-store-link-props :type type
+                            :annotation orglink
+                            :link url
+                            :description title
+                            :orglink orglink
+                            :initial (buffer-string)))
+    (org-protocol-capture-html-do-capture)
+    nil))
+
+(add-to-list 'org-protocol-protocol-alist
+             '("capture-readability"
+               :protocol "capture-readability"
+               :function org-protocol-capture-readability
+               :kill-client t))
+
+;;;; Helper functions
+
+(defun org-protocol-capture-html-do-capture ()
+  "Call `org-capture' and demote page headings in capture buffer."
+  (raise-frame)
+  (funcall 'org-capture nil template)
+
+  ;; Demote page headings in capture buffer to below the
+  ;; top-level Org heading
+  (save-excursion
+    (goto-char (point-min))
+    (re-search-forward (rx bol "*" (1+ space)) nil t) ; Skip 1st heading
+    (while (re-search-forward (rx bol "*" (1+ space)) nil t)
+      (org-demote-subtree))))
+
 (provide 'org-protocol-capture-html)
+
 ;;; org-protocol-capture-html ends here
