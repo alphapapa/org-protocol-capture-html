@@ -9,8 +9,6 @@ Here's an example of what you get in Emacs from capturing [[http://kitchingroup.
 [[screenshot.png]]
 
 * Contents :TOC:
- - [[#org-protocol-capture-html][org-protocol-capture-html]]
- - [[#screenshot][Screenshot]]
  - [[#requirements][Requirements]]
  - [[#installation][Installation]]
      - [[#emacs][Emacs]]
