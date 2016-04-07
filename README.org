@@ -122,6 +122,16 @@ Options:
 
 After installing the bookmarklets, you can select some text on a web page with your mouse, open the bookmarklet with the browser, and Emacs should pop up an Org capture buffer.  You can also do it without selecting text first, if you just want to capture a link to the page.
 
+You can also pass data through the shell script, for example:
+
+#+BEGIN_SRC sh
+dmesg | grep -i sata | org-protocol-capture-html.sh --heading "dmesg SATA messages" --template i
+
+org-protocol-capture-html.sh --readability --url "https://lwn.net/Articles/615220/"
+
+org-protocol-capture-html.sh -h "TODO Feed the cat!" -t i "He gets grouchy if I forget!"
+#+END_SRC
+
 * Changelog
 
 ** <2016-04-03 Sun>
