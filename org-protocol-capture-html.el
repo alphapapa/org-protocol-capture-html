@@ -1,4 +1,4 @@
-;;; org-protocol-capture-html --- Capture HTML with org-protocol
+;;; org-protocol-capture-html.el --- Capture HTML with org-protocol
 
 ;;; Commentary:
 
@@ -140,4 +140,4 @@ Pandoc, converting HTML to Org-mode."
 
 (provide 'org-protocol-capture-html)
 
-;;; org-protocol-capture-html ends here
+;;; org-protocol-capture-html.el ends here
