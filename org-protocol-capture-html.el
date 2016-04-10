@@ -1,5 +1,7 @@
 ;;; org-protocol-capture-html.el --- Capture HTML with org-protocol
 
+;; Package-Requires: ((emacs "24.4"))
+
 ;;; Commentary:
 
 ;; This package captures Web pages into Org-mode using Pandoc to
@@ -12,6 +14,10 @@
 ;; for instructions.
 
 ;;; Code:
+
+(require 'org)
+(require 'org-protocol)
+(require 'subr-x)
 
 ;;;; Direct-to-Pandoc
 
