@@ -18,6 +18,7 @@
 (require 'org)
 (require 'org-protocol)
 (require 'subr-x)
+(require 'cl-lib)
 
 ;;;; Direct-to-Pandoc
 
@@ -41,10 +42,10 @@ Pandoc, converting HTML to Org-mode."
 	 (type (if (string-match "^\\([a-z]+\\):" url)
 		   (match-string 1 url)))
 	 (title (or (string-trim (cadr parts)) ""))
-	 (content (or (string-trim (caddr parts)) ""))
+	 (content (or (string-trim (cl-caddr parts)) ""))
 	 (orglink (org-make-link-string
 		   url (if (string-match "[^[:space:]]" title) title url)))
-	 (query (or (org-protocol-convert-query-to-plist (cadddr parts)) ""))
+	 (query (or (org-protocol-convert-query-to-plist (cl-cadddr parts)) ""))
 	 (org-capture-link-is-already-stored t)) ; avoid call to org-store-link
 
     (setq org-stored-links
@@ -86,10 +87,10 @@ Pandoc, converting HTML to Org-mode."
 	 (type (if (string-match "^\\([a-z]+\\):" url)
 		   (match-string 1 url)))
 	 (title (or (string-trim (cadr parts)) ""))
-	 (content (or (string-trim (caddr parts)) ""))
+	 (content (or (string-trim (cl-caddr parts)) ""))
 	 (orglink (org-make-link-string
 		   url (if (string-match "[^[:space:]]" title) title url)))
-	 (query (or (org-protocol-convert-query-to-plist (cadddr parts)) ""))
+	 (query (or (org-protocol-convert-query-to-plist (cl-cadddr parts)) ""))
          ;; Avoid call to org-store-link
 	 (org-capture-link-is-already-stored t))
 
