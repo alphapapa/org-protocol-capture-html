@@ -13,6 +13,10 @@
 
 ;;; Code:
 
+;;;; Require
+
+(require 'org-protocol)
+
 ;;;; Direct-to-Pandoc
 
 (defun org-protocol-capture-html-with-pandoc (data)
