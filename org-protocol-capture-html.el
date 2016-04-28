@@ -16,6 +16,7 @@
 ;;;; Require
 
 (require 'org-protocol)
+(require 'subr-x)
 
 ;;;; Direct-to-Pandoc
 
