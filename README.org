@@ -1,5 +1,7 @@
 * org-protocol-capture-html
 
+[[https://alphapapa.github.io/dont-tread-on-emacs/][dont-tread-on-emacs-150.png]]
+
 org-protocol is awesome, but browsers do a pretty poor job of turning a page's HTML content into plain-text.  However, Pandoc supports converting /from/ HTML /to/ org-mode, so we can use it to turn HTML into Org-mode content!  It can even turn HTML tables into Org tables!
 
 * Screenshot
@@ -24,6 +26,7 @@ Here's an example of what you get in Emacs from capturing [[http://kitchingroup.
  - [[#to-do][To-Do]]
      - [[#handle-long-chunks-of-html][Handle long chunks of HTML]]
      - [[#package-for-melpa][Package for MELPA]]
+ - [[#dont-tread-on-me][Don't Tread on Me]]
 
 * Requirements
 
