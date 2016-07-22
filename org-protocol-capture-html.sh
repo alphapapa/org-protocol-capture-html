@@ -148,9 +148,9 @@ fi
 
 # ** URL-encode html
 
-heading=$(urlencode <<<"$heading")
-url=$(urlencode <<<"$url")
-html=$(urlencode <<<"$html")
+heading=$(urlencode <<<"$heading") || die "Unable to urlencode heading."
+url=$(urlencode <<<"$url") || die "Unable to urlencode URL."
+html=$(urlencode <<<"$html") || die "Unable to urlencode HTML."
 
 # ** Send to Emacs
 
