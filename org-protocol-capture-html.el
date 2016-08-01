@@ -1,4 +1,4 @@
-;;; org-protocol-capture-html --- Capture HTML with org-protocol
+;;; org-protocol-capture-html.el --- Capture HTML with org-protocol
 
 ;;; Commentary:
 
