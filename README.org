@@ -24,6 +24,7 @@ Here's an example of what you get in Emacs from capturing [[http://kitchingroup.
      - [[#org-protocol-instructions][org-protocol Instructions]]
      - [[#selection-grabbing-function][Selection-grabbing function]]
  - [[#to-do][To-Do]]
+     - [[#use-eww-readable][Use eww-readable]]
      - [[#handle-long-chunks-of-html][Handle long chunks of HTML]]
      - [[#package-for-melpa][Package for MELPA]]
  - [[#dont-tread-on-me][Don't Tread on Me]]
@@ -265,6 +266,10 @@ Here's a one-line version of it, better for pasting into bookmarklets and such:
 #+END_SRC
 
 * To-Do
+
+** TODO Use eww-readable
+
+Emacs 25.1 has ~eww-readable~, which is said to work very well.  Using it would mean that there'd be no need for =python-readability=.
 
 ** Handle long chunks of HTML
 
