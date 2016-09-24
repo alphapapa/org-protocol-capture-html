@@ -18,6 +18,7 @@ Here's an example of what you get in Emacs from capturing [[http://kitchingroup.
  - [[#shell-script][Shell script]]
  - [[#usage][Usage]]
  - [[#changelog][Changelog]]
+     - [[#2016-09-23-fri][<2016-09-23 Fri>]]
      - [[#2016-04-03-sun][<2016-04-03 Sun>]]
      - [[#2016-03-23-wed][<2016-03-23 Wed>]]
  - [[#appendix][Appendix]]
@@ -137,6 +138,10 @@ org-protocol-capture-html.sh -h "TODO Feed the cat!" -t i "He gets grouchy if I 
 #+END_SRC
 
 * Changelog
+
+** <2016-09-23 Fri>
+
++ Fix for Pandoc versions =>== 1.16, which deprecates =--no-wrap= in favor of =--wrap=none=.
 
 ** <2016-04-03 Sun>
 

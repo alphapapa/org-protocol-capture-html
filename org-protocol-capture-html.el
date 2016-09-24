@@ -18,6 +18,27 @@
 (require 'org-protocol)
 (require 'subr-x)
 
+;;;; Test Pandoc
+
+(defconst org-protocol-capture-html-pandoc-no-wrap-option
+  ;; Pandoc >= 1.16 deprecates the --no-wrap option, replacing it with
+  ;; --wrap=none.  Sending the wrong option causes output to STDERR,
+  ;; which `call-process-region' doesn't like.  So we test Pandoc to see
+  ;; which option to use.
+  (let ((process (start-process "test-pandoc" nil "pandoc" "--dump-args" "--no-wrap"))
+        (limit 3)
+        (checked 0))
+    (while (process-live-p process)
+      (if (= checked limit)
+          (error "Unable to test Pandoc!  Please report this bug! (include the output of \"pandoc --dump-args --no-wrap\")")
+        (sit-for 0.2)
+        (incf checked)))
+    (if (= 0 (process-exit-status process))
+        "--no-wrap"
+      "--wrap=none"))
+  "Option to pass to Pandoc to disable wrapping.  Pandoc >= 1.16
+  deprecates `--no-wrap' in favor of `--wrap=none'.")
+
 ;;;; Direct-to-Pandoc
 
 (defun org-protocol-capture-html-with-pandoc (data)
@@ -54,7 +75,7 @@ Pandoc, converting HTML to Org-mode."
       (insert content)
       (if (not (= 0 (call-process-region
                      (point-min) (point-max)
-                     "pandoc" t t nil "--no-wrap" "-f" "html" "-t" "org")))
+                     "pandoc" t t nil "-f" "html" "-t" "org" org-protocol-capture-html-pandoc-no-wrap-option)))
           (message "Pandoc failed: " (buffer-string))
         (progn
           ;; Pandoc succeeded
@@ -110,7 +131,8 @@ Pandoc, converting HTML to Org-mode."
         (setq title (buffer-substring-no-properties (search-forward "Title:") (line-end-position)))
         (setq orglink (org-make-link-string url (if (string-match "[^[:space:]]" title) title url))))
 
-      (unless (= 0 (call-process-region (point-min) (point-max) "pandoc" t t nil "--no-wrap" "-f" "html" "-t" "org"))
+      (unless (= 0 (call-process-region (point-min) (point-max) "pandoc" t t nil
+                                        "-f" "html" "-t" "org" org-protocol-capture-html-pandoc-no-wrap-option))
         (error "Pandoc failed."))
 
       (org-store-link-props :type type
