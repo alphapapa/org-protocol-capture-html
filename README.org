@@ -185,7 +185,7 @@ Then update =~/.local/share/applications/mimeinfo.cache= by running:
 Add to your Emacs init file:
 
 #+BEGIN_SRC elisp
-    (server-start) 
+    (server-start)
     (require 'org-protocol)
 #+END_SRC
 
