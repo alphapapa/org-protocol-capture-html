@@ -26,9 +26,9 @@ Here's an example of what you get in Emacs from capturing [[http://kitchingroup.
      - [[#selection-grabbing-function][Selection-grabbing function]]
  - [[#to-do][To-Do]]
      - [[#use-eww-readable][Use eww-readable]]
+     - [[#file-based-capturing][File-based capturing]]
      - [[#handle-long-chunks-of-html][Handle long chunks of HTML]]
      - [[#package-for-melpa][Package for MELPA]]
- - [[#dont-tread-on-me][Don't Tread on Me]]
 
 * Requirements
 
@@ -275,6 +275,30 @@ Here's a one-line version of it, better for pasting into bookmarklets and such:
 ** TODO Use eww-readable
 
 Emacs 25.1 has ~eww-readable~, which is said to work very well.  Using it would mean that there'd be no need for =python-readability=.
+
+** TODO File-based capturing
+
+Pentadactyl has the =:write= command, which can write a page's HTML to a file, or to a command, like =:write !org-protocol-capture-html.sh=.  This should make it easy to implement file-based capturing, which would pass HTML through a temp file rather than as an argument, and this would work around the argument-length limit that we occasionally run into.
+
+All that should be necessary is to:
+
+1. Add a new sub-protocol =capture-file= that receives a path to a file instead of a URL to a page.
+     - It should probably delete the file after finishing the capture, to avoid leaving temp files laying around, so it should protect against deleting random files.  Probably the best way to do this would be to define a directory and a prefix, and any files not in that directory and not having that prefix should not be deleted.
+2. Add a options to =org-protocol-capture-html.sh= to capture with files.
+     - This should have two methods:
+         + Pass the path to an existing file, which will then be passed to Emacs.
+         + Pass content via =STDIN=, write it to a tempfile, and pass the tempfile's path to Emacs.  The tempfile should go in the directory and have the prefix so that Emacs knows it's safe to delete that file.
+3. Document how to integrate this with Pentadactyl.  It should be very simple, like =:write !org-protocol-capture-html --tempfile=.
+     - This would, by default, pass the entire content of the page.  It would be good to also be able to capture only the selection, and to be able to use Readability on the result.  Here's an example from the Pentadactyl manual that seems to show using JavaScript to fill arguments to the command:
+
+#+BEGIN_EXAMPLE txt
+  :com! search-selection,ss -bang -nargs=? -complete search
+  \ -js commands.execute((bang ? open : tabopen )
+  \ + args + + buffer.currentWord)
+#+END_EXAMPLE
+
+        However, I don't see how this would allow writing different content to =STDIN=, only arguments.  So this might not be possible without modifying Pentadactyl and/or using a separate Firefox extension.  [[file:~/src/dactyl/common/modules/buffer.jsm::commands.add(%5B"sav%5Beas%5D",%20"w%5Brite%5D"%5D,][Here]] is the source for the =:write= command, and [[file:~/Temp/src/dactyl/common/modules/storage.jsm::write:%20function%20write(buf,%20mode,%20perms,%20encoding)%20{][here]] for the underlying JS function.  And you can see [[file:~/src/dactyl/common/modules/io.jsm::%5B"exec",%20">"%20%2B%20shellEscape(stdout.path),%20"2>&1",%20"<"%20%2B%20shellEscape(stdin.path),][here]] how it uses temp files to pass =STDIN= to commands.
+
 
 ** Handle long chunks of HTML
 
