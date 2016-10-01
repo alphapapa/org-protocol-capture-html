@@ -26,23 +26,19 @@
   ;; --wrap=none.  Sending the wrong option causes output to STDERR,
   ;; which `call-process-region' doesn't like.  So we test Pandoc to see
   ;; which option to use.
-  (let* ((process (start-process "test-pandoc" "*test-pandoc*" "pandoc" "--dump-args" "--no-wrap"))
-         (buffer (process-buffer process))
-         (limit 3)
-         (checked 0)
-         output)
-    (while (process-live-p process)
-      (if (= checked limit)
-          (error "Unable to test Pandoc!  Please report this bug! (include the output of \"pandoc --dump-args --no-wrap\")")
-        (sit-for 0.2)
-        (cl-incf checked)))
-    (with-current-buffer buffer
-      (setq output (buffer-string)))
-    (kill-buffer buffer)
-    (if (and (= 0 (process-exit-status process))
-             (not (string-match "--no-wrap is deprecated" output)))
-        "--no-wrap"
-      "--wrap=none"))
+  (with-temp-buffer
+    (let* ((process (start-process "test-pandoc" (current-buffer) "pandoc" "--dump-args" "--no-wrap"))
+           (limit 3)
+           (checked 0))
+      (while (process-live-p process)
+        (if (= checked limit)
+            (error "Unable to test Pandoc!  Please report this bug! (include the output of \"pandoc --dump-args --no-wrap\")")
+          (sit-for 0.2)
+          (cl-incf checked)))
+      (if (and (= 0 (process-exit-status process))
+               (not (string-match "--no-wrap is deprecated" (buffer-string))))
+          "--no-wrap"
+        "--wrap=none")))
   "Option to pass to Pandoc to disable wrapping.  Pandoc >= 1.16
   deprecates `--no-wrap' in favor of `--wrap=none'.")
 
