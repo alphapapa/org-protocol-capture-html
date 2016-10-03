@@ -98,13 +98,6 @@ debug "Remaining args: ${rest[@]}"
 
 # * Main
 
-# ** Check template
-
-if [[ ${#template} -gt 1 ]]
-then
-    die "Template key should be one letter."
-fi
-
 # ** Get HTML
 
 if [[ -n $@ ]]
