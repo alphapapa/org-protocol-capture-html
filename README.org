@@ -141,6 +141,14 @@ org-protocol-capture-html.sh -h "TODO Feed the cat!" -t i "He gets grouchy if I 
 
 * Changelog
 
+** <2016-10-05 Wed>
+
++  Check Pandoc's no-wrap option lazily (upon first capture), and if Pandoc takes too long for some reason, try again next time a capture is run.
++  If Pandoc does take too long, kill the buffer and process without prompting.
++  Use ~sleep-for~ instead of ~sit-for~ to work around any potential issues with whatever "input" may interrupt ~sit-for~.
+
+Hopefully this puts issue #12 to rest for good.  Thanks to [[https://github.com/jguenther][@jguenther]] for his help fixing and reporting bugs.
+
 ** <2016-10-03 Mon>
 
 + Handle pages without titles in bookmarklet examples.  If a page lacks an HTML title, the string passed to =org-protocol= would have nothing where the title should go, and this would cause the capture to fail.  Now the bookmarklets will use =[untitled page]= instead of an empty string.  (No Elisp code changed, only the examples in the readme.)
