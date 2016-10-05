@@ -40,7 +40,13 @@ deprecates `--no-wrap' in favor of `--wrap=none'.")
             (while (process-live-p process)
               (if (= checked limit)
                   (progn
-                    (kill-process process)
+                    ;; Pandoc didn't exit in time.  Kill it and raise
+                    ;; an error.  This function will return `nil' and
+                    ;; `org-protocol-capture-html-pandoc-no-wrap-option'
+                    ;; will remain `nil', which will cause this
+                    ;; function to run again and set the const when a
+                    ;; capture is run.
+                    (set-process-query-on-exit-flag process nil)
                     (error "Unable to test Pandoc!  Please report this bug! (include the output of \"pandoc --dump-args --no-wrap\")"))
                 (sit-for 0.2)
                 (cl-incf checked)))
