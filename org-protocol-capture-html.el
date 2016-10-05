@@ -21,26 +21,33 @@
 
 ;;;; Test Pandoc
 
-(defconst org-protocol-capture-html-pandoc-no-wrap-option
-  ;; Pandoc >= 1.16 deprecates the --no-wrap option, replacing it with
-  ;; --wrap=none.  Sending the wrong option causes output to STDERR,
-  ;; which `call-process-region' doesn't like.  So we test Pandoc to see
-  ;; which option to use.
-  (with-temp-buffer
-    (let* ((process (start-process "test-pandoc" (current-buffer) "pandoc" "--dump-args" "--no-wrap"))
-           (limit 3)
-           (checked 0))
-      (while (process-live-p process)
-        (if (= checked limit)
-            (error "Unable to test Pandoc!  Please report this bug! (include the output of \"pandoc --dump-args --no-wrap\")")
-          (sit-for 0.2)
-          (cl-incf checked)))
-      (if (and (= 0 (process-exit-status process))
-               (not (string-match "--no-wrap is deprecated" (buffer-string))))
-          "--no-wrap"
-        "--wrap=none")))
+(defconst org-protocol-capture-html-pandoc-no-wrap-option nil
+  ;; Set this so it won't be unbound
   "Option to pass to Pandoc to disable wrapping.  Pandoc >= 1.16
-  deprecates `--no-wrap' in favor of `--wrap=none'.")
+deprecates `--no-wrap' in favor of `--wrap=none'.")
+
+(defun org-protocol-capture-html-define-pandoc-wrap-const ()
+  "Set `org-protocol-capture-html-pandoc-no-wrap-option'."
+  (setq org-protocol-capture-html-pandoc-no-wrap-option
+        ;; Pandoc >= 1.16 deprecates the --no-wrap option, replacing it with
+        ;; --wrap=none.  Sending the wrong option causes output to STDERR,
+        ;; which `call-process-region' doesn't like.  So we test Pandoc to see
+        ;; which option to use.
+        (with-temp-buffer
+          (let* ((process (start-process "test-pandoc" (current-buffer) "pandoc" "--dump-args" "--no-wrap"))
+                 (limit 3)
+                 (checked 0))
+            (while (process-live-p process)
+              (if (= checked limit)
+                  (progn
+                    (kill-process process)
+                    (error "Unable to test Pandoc!  Please report this bug! (include the output of \"pandoc --dump-args --no-wrap\")"))
+                (sit-for 0.2)
+                (cl-incf checked)))
+            (if (and (= 0 (process-exit-status process))
+                     (not (string-match "--no-wrap is deprecated" (buffer-string))))
+                "--no-wrap"
+              "--wrap=none")))))
 
 ;;;; Direct-to-Pandoc
 
@@ -56,6 +63,9 @@ Pandoc, converting HTML to Org-mode."
   ;; function would require re-encoding the data into a URL string
   ;; with Emacs after Pandoc converts it.  Since we've already split
   ;; it up, we might as well go ahead and run the capture directly.
+
+  (unless org-protocol-capture-html-pandoc-no-wrap-option
+    (org-protocol-capture-html-define-pandoc-wrap-const))
 
   (let* ((parts (org-protocol-split-data data t org-protocol-data-separator))
 	 (template (or (and (>= 2 (length (car parts))) (pop parts))
@@ -101,6 +111,9 @@ Pandoc, converting HTML to Org-mode."
 
 (defun org-protocol-capture-readability (data)
   "Capture content of URL with readability-lxml Python package."
+
+  (unless org-protocol-capture-html-pandoc-no-wrap-option
+    (org-protocol-capture-html-define-pandoc-wrap-const))
 
   (let* ((parts (org-protocol-split-data data t org-protocol-data-separator))
 	 (template (or (and (>= 2 (length (car parts))) (pop parts))
