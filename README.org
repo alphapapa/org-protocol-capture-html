@@ -141,6 +141,10 @@ org-protocol-capture-html.sh -h "TODO Feed the cat!" -t i "He gets grouchy if I 
 
 * Changelog
 
+** <2016-10-23 Sun>
+
++ Add =org-protocol-capture-html-demote-times= variable, which controls how many times headings in captured pages are demoted.  This is handy if you use a sub-heading in your capture template, so you can make all the headings in captured pages lower than the lowest-level heading in your capture template.
+
 ** <2016-10-05 Wed>
 
 +  Check Pandoc's no-wrap option lazily (upon first capture), and if Pandoc takes too long for some reason, try again next time a capture is run.

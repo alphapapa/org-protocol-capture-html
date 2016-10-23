@@ -19,6 +19,13 @@
 (require 'cl)
 (require 'subr-x)
 
+;;;; Vars
+
+(defcustom org-protocol-capture-html-demote-times 1
+  "How many times to demote headings in captured pages.
+You may want to increase this if you use a sub-heading in your capture template."
+  :group 'org-protocol-capture-html :type 'integer)
+
 ;;;; Test Pandoc
 
 (defconst org-protocol-capture-html-pandoc-no-wrap-option nil
@@ -185,7 +192,8 @@ Pandoc, converting HTML to Org-mode."
     (goto-char (point-min))
     (re-search-forward (rx bol "*" (1+ space)) nil t) ; Skip 1st heading
     (while (re-search-forward (rx bol "*" (1+ space)) nil t)
-      (org-demote-subtree))))
+      (dotimes (n org-protocol-capture-html-demote-times)
+        (org-demote-subtree)))))
 
 (provide 'org-protocol-capture-html)
 
