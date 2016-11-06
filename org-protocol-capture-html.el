@@ -102,7 +102,7 @@ Pandoc, converting HTML to Org-mode."
       (if (not (= 0 (call-process-region
                      (point-min) (point-max)
                      "pandoc" t t nil "-f" "html" "-t" "org" org-protocol-capture-html-pandoc-no-wrap-option)))
-          (message "Pandoc failed: " (buffer-string))
+          (message "Pandoc failed: %s" (buffer-string))
         (progn
           ;; Pandoc succeeded
           (org-store-link-props :type type
