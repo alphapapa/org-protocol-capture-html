@@ -4,11 +4,11 @@
 <a href=https://alphapapa.github.io/dont-tread-on-emacs/><img src="dont-tread-on-emacs-150.png" align="right"></a>
 #+END_HTML
 
-* org-protocol-capture-html
+* org-protocol-capture-html                                        :noexport:
 
 org-protocol is awesome, but browsers do a pretty poor job of turning a page's HTML content into plain-text.  However, Pandoc supports converting /from/ HTML /to/ org-mode, so we can use it to turn HTML into Org-mode content!  It can even turn HTML tables into Org tables!
 
-* Screenshot
+* Screenshot                                                       :noexport:
 
 Here's an example of what you get in Emacs from capturing [[http://kitchingroup.cheme.cmu.edu/blog/2014/07/17/Pandoc-does-org-mode-now/][this page]]:
 
@@ -27,10 +27,6 @@ Here's an example of what you get in Emacs from capturing [[http://kitchingroup.
      - [[#org-protocol-instructions][org-protocol Instructions]]
      - [[#selection-grabbing-function][Selection-grabbing function]]
  - [[#to-do][To-Do]]
-     - [[#use-eww-readable][Use eww-readable]]
-     - [[#file-based-capturing][File-based capturing]]
-     - [[#handle-long-chunks-of-html][Handle long chunks of HTML]]
-     - [[#package-for-melpa][Package for MELPA]]
 
 * Requirements
 
@@ -78,6 +74,12 @@ This one uses =python-readability= to capture the article or main content of the
   javascript:location.href = 'org-protocol://capture-readability://w/' + encodeURIComponent(location.href) + '/' + encodeURIComponent(document.title || "[untitled page]") + '/';
 #+END_SRC
 
+This one uses =eww='s built-in readability-scoring function in Emacs 25.1 and up to capture the article or main content of the page.
+
+#+BEGIN_SRC js
+  javascript:location.href = 'org-protocol://capture-eww-readable://w/' + encodeURIComponent(location.href) + '/' + encodeURIComponent(document.title || "[untitled page]") + '/';
+#+END_SRC
+
 *Note:* When you click on one of these bookmarklets for the first time, Firefox will ask what program to use to handle the =org-protocol= protocol.  You can simply choose the default program that appears (=org-protocol=).
 
 *** Pentadactyl
@@ -85,8 +87,11 @@ This one uses =python-readability= to capture the article or main content of the
 If you use [[http://5digits.org/pentadactyl/][Pentadactyl]], you can use the Firefox *bookmarklets* above, or you can put these *commands* in your =.pentadactylrc=:
 
 #+BEGIN_SRC js
-map -modes=n,v ch -javascript content.location.href = 'org-protocol://capture-html://w/' + encodeURIComponent(content.location.href) + '/' + encodeURIComponent(content.document.title || "[untitled page]") + '/' + encodeURIComponent(function () {var html = ""; if (typeof content.document.getSelection != "undefined") {var sel = content.document.getSelection(); if (sel.rangeCount) {var container = document.createElement("div"); for (var i = 0, len = sel.rangeCount; i < len; ++i) {container.appendChild(sel.getRangeAt(i).cloneContents());} html = container.innerHTML;}} else if (typeof document.selection != "undefined") {if (document.selection.type == "Text") {html = document.selection.createRange().htmlText;}} var relToAbs = function (href) {var a = content.document.createElement("a"); a.href = href; var abs = a.protocol + "//" + a.host + a.pathname + a.search + a.hash; a.remove(); return abs;}; var elementTypes = [['a', 'href'], ['img', 'src']]; var div = content.document.createElement('div'); div.innerHTML = html; elementTypes.map(function(elementType) {var elements = div.getElementsByTagName(elementType[0]); for (var i = 0; i < elements.length; i++) {elements[i].setAttribute(elementType[1], relToAbs(elements[i].getAttribute(elementType[1])));}}); return div.innerHTML;}());
-map -modes=n,v cr -javascript content.location.href = 'org-protocol://capture-readability://w/' + encodeURIComponent(content.location.href) + '/' + encodeURIComponent(content.document.title || "[untitled page]") + '/';
+  map -modes=n,v ch -javascript content.location.href = 'org-protocol://capture-html://w/' + encodeURIComponent(content.location.href) + '/' + encodeURIComponent(content.document.title || "[untitled page]") + '/' + encodeURIComponent(function () {var html = ""; if (typeof content.document.getSelection != "undefined") {var sel = content.document.getSelection(); if (sel.rangeCount) {var container = document.createElement("div"); for (var i = 0, len = sel.rangeCount; i < len; ++i) {container.appendChild(sel.getRangeAt(i).cloneContents());} html = container.innerHTML;}} else if (typeof document.selection != "undefined") {if (document.selection.type == "Text") {html = document.selection.createRange().htmlText;}} var relToAbs = function (href) {var a = content.document.createElement("a"); a.href = href; var abs = a.protocol + "//" + a.host + a.pathname + a.search + a.hash; a.remove(); return abs;}; var elementTypes = [['a', 'href'], ['img', 'src']]; var div = content.document.createElement('div'); div.innerHTML = html; elementTypes.map(function(elementType) {var elements = div.getElementsByTagName(elementType[0]); for (var i = 0; i < elements.length; i++) {elements[i].setAttribute(elementType[1], relToAbs(elements[i].getAttribute(elementType[1])));}}); return div.innerHTML;}());
+
+  map -modes=n,v cr -javascript content.location.href = 'org-protocol://capture-readability://w/' + encodeURIComponent(content.location.href) + '/' + encodeURIComponent(content.document.title || "[untitled page]") + '/';
+
+  map -modes=n,v ce -javascript location.href='org-protocol://capture-eww-readable://w/'+encodeURIComponent(content.location.href)+'/'+encodeURIComponent(content.document.title || "[untitled page]") + '/';
 #+END_SRC
 
 *Note:* The JavaScript objects are slightly different for running as Pentadactyl commands since it has its own chrome.
@@ -96,8 +101,12 @@ map -modes=n,v cr -javascript content.location.href = 'org-protocol://capture-re
 These bookmarklets work in Chrome:
 
 #+BEGIN_SRC js
-javascript:location.href = 'org-protocol:///capture-html:///w/' + encodeURIComponent(location.href) + '/' + encodeURIComponent(document.title || "[untitled page]") + '/' + encodeURIComponent(function () {var html = ""; if (typeof window.getSelection != "undefined") {var sel = window.getSelection(); if (sel.rangeCount) {var container = document.createElement("div"); for (var i = 0, len = sel.rangeCount; i < len; ++i) {container.appendChild(sel.getRangeAt(i).cloneContents());} html = container.innerHTML;}} else if (typeof document.selection != "undefined") {if (document.selection.type == "Text") {html = document.selection.createRange().htmlText;}} var relToAbs = function (href) {var a = document.createElement("a"); a.href = href; var abs = a.protocol + "//" + a.host + a.pathname + a.search + a.hash; a.remove(); return abs;}; var elementTypes = [['a', 'href'], ['img', 'src']]; var div = document.createElement('div'); div.innerHTML = html; elementTypes.map(function(elementType) {var elements = div.getElementsByTagName(elementType[0]); for (var i = 0; i < elements.length; i++) {elements[i].setAttribute(elementType[1], relToAbs(elements[i].getAttribute(elementType[1])));}}); return div.innerHTML;}());
-javascript:location.href = 'org-protocol:///capture-readability:///w/' + encodeURIComponent(location.href) + '/' + encodeURIComponent(document.title || "[untitled page]") + '/';
+  javascript:location.href = 'org-protocol:///capture-html:///w/' + encodeURIComponent(location.href) + '/' + encodeURIComponent(document.title || "[untitled page]") + '/' + encodeURIComponent(function () {var html = ""; if (typeof window.getSelection != "undefined") {var sel = window.getSelection(); if (sel.rangeCount) {var container = document.createElement("div"); for (var i = 0, len = sel.rangeCount; i < len; ++i) {container.appendChild(sel.getRangeAt(i).cloneContents());} html = container.innerHTML;}} else if (typeof document.selection != "undefined") {if (document.selection.type == "Text") {html = document.selection.createRange().htmlText;}} var relToAbs = function (href) {var a = document.createElement("a"); a.href = href; var abs = a.protocol + "//" + a.host + a.pathname + a.search + a.hash; a.remove(); return abs;}; var elementTypes = [['a', 'href'], ['img', 'src']]; var div = document.createElement('div'); div.innerHTML = html; elementTypes.map(function(elementType) {var elements = div.getElementsByTagName(elementType[0]); for (var i = 0; i < elements.length; i++) {elements[i].setAttribute(elementType[1], relToAbs(elements[i].getAttribute(elementType[1])));}}); return div.innerHTML;}());
+
+  javascript:location.href = 'org-protocol:///capture-readability:///w/' + encodeURIComponent(location.href) + '/' + encodeURIComponent(document.title || "[untitled page]") + '/';
+
+  javascript:location.href = 'org-protocol:///capture-eww-readable:///w/' + encodeURIComponent(location.href) + '/' + encodeURIComponent(document.title || "[untitled page]") + '/';
+
 #+END_SRC
 
 *Note:* The first sets of slashes are tripled compared to the Firefox bookmarklets.  When testing with Chrome, I found that =xdg-open= was collapsing the double-slashes into single-slashes, which breaks =org-protocol=.  I'm not sure why that doesn't seem to be necessary for Firefox.  If you have any trouble with this, you might try removing the extra slashes.
@@ -139,7 +148,11 @@ org-protocol-capture-html.sh --readability --url "https://lwn.net/Articles/61522
 org-protocol-capture-html.sh -h "TODO Feed the cat!" -t i "He gets grouchy if I forget!"
 #+END_SRC
 
-* Changelog
+* Changelog                                                      :noexport_1:
+
+** <2017-04-11>
+
++ Add =org-protocol-capture-eww-readable=.  For Emacs 25.1 and up, this uses =eww='s built-in readability-style function instead of calling external Python scripts.
 
 ** <2016-10-23 Sun>
 
@@ -301,11 +314,11 @@ Here's a one-line version of it, better for pasting into bookmarklets and such:
   function () {var html = ""; if (typeof content.document.getSelection != "undefined") {var sel = content.document.getSelection(); if (sel.rangeCount) {var container = document.createElement("div"); for (var i = 0, len = sel.rangeCount; i < len; ++i) {container.appendChild(sel.getRangeAt(i).cloneContents());} html = container.innerHTML;}} else if (typeof document.selection != "undefined") {if (document.selection.type == "Text") {html = document.selection.createRange().htmlText;}} var relToAbs = function (href) {var a = content.document.createElement("a"); a.href = href; var abs = a.protocol + "//" + a.host + a.pathname + a.search + a.hash; a.remove(); return abs;}; var elementTypes = [['a', 'href'], ['img', 'src']]; var div = content.document.createElement('div'); div.innerHTML = html; elementTypes.map(function(elementType) {var elements = div.getElementsByTagName(elementType[0]); for (var i = 0; i < elements.length; i++) {elements[i].setAttribute(elementType[1], relToAbs(elements[i].getAttribute(elementType[1])));}}); return div.innerHTML;}
 #+END_SRC
 
-* To-Do
+* To-Do                                                          :noexport_1:
 
-** TODO Use eww-readable
+** TODO Add link to Mac OS X article
 
-Emacs 25.1 has ~eww-readable~, which is said to work very well.  Using it would mean that there'd be no need for =python-readability=.
+[[https://blog.aaronbieber.com/2016/11/24/org-capture-from-anywhere-on-your-mac.html][This article]] would be helpful for Mac users in setting up org-protocol.
 
 ** TODO File-based capturing
 

@@ -179,6 +179,109 @@ Pandoc, converting HTML to Org-mode."
                :function org-protocol-capture-readability
                :kill-client t))
 
+;;;; eww-readable
+
+(eval-when-compile
+  ;; eww-readable only works on Emacs >=25.1, but I think it's better
+  ;; to check for the actual symbols.  I think using
+  ;; `eval-when-compile' is the right way to do this, but I'm not
+  ;; sure.
+  (when (and (require 'eww nil t)
+             (require 'dom nil t)
+             (fboundp 'eww-score-readability))
+
+    (defun org-protocol-capture-eww-readable (data)
+      "Capture content of URL with eww-readable.."
+
+      (unless org-protocol-capture-html-pandoc-no-wrap-option
+        (org-protocol-capture-html-define-pandoc-wrap-const))
+
+      (let* ((parts (org-protocol-split-data data t org-protocol-data-separator))
+             (template (or (and (>= 2 (length (car parts))) (pop parts))
+                           org-protocol-default-template-key))
+             (url (org-protocol-sanitize-uri (car parts)))
+             (type (if (string-match "^\\([a-z]+\\):" url)
+                       (match-string 1 url)))
+             (html (org-protocol-capture-html--url-html url))
+             (result (org-protocol-capture-html--eww-readable html))
+             (title (cdr result))
+             (content (with-temp-buffer
+                        (insert (car result))
+                        ;; Convert to Org with Pandoc
+                        (unless (= 0 (call-process-region (point-min) (point-max)
+                                                          "pandoc" t t nil "-f" "html" "-t" "org"
+                                                          org-protocol-capture-html-pandoc-no-wrap-option))
+                          (error "Pandoc failed."))
+                        (remove-dos-crlf)
+                        ;; Demote page headings in capture buffer to below the
+                        ;; top-level Org heading and "Article" 2nd-level heading
+                        (save-excursion
+                          (goto-char (point-min))
+                          (while (re-search-forward (rx bol (1+ "*") (1+ space)) nil t)
+                            (beginning-of-line)
+                            (insert "**")
+                            (end-of-line)))
+                        (buffer-string)))
+             (orglink (org-make-link-string
+                       url (if (string-match "[^[:space:]]" title) title url)))
+             (query (or (org-protocol-convert-query-to-plist (cadddr parts)) ""))
+             ;; Avoid call to org-store-link
+             (org-capture-link-is-already-stored t))
+
+        (setq org-stored-links
+              (cons (list url title) org-stored-links))
+        (kill-new orglink)
+
+        (org-store-link-props :type type
+                              :annotation orglink
+                              :link url
+                              :description title
+                              :orglink orglink
+                              :initial content)
+        (org-protocol-capture-html-do-capture)
+        nil))
+
+    (add-to-list 'org-protocol-protocol-alist
+                 '("capture-eww-readable"
+                   :protocol "capture-eww-readable"
+                   :function org-protocol-capture-eww-readable
+                   :kill-client t))
+
+    (defun org-protocol-capture-html--url-html (url)
+      "Return HTML from URL as string."
+      (let* ((response-buffer (url-retrieve-synchronously url nil t))
+             (encoded-html (with-current-buffer response-buffer
+                             (pop-to-buffer response-buffer)
+                             ;; Skip HTTP headers
+                             (re-search-forward "\r$" nil t)
+                             (delete-region (point-min) (point))
+                             (buffer-string))))
+        (kill-buffer response-buffer)     ; Not sure if necessary to avoid leaking buffer
+        (with-temp-buffer
+          ;; For some reason, running `decode-coding-region' in the
+          ;; response buffer has no effect, so we have to do it in a
+          ;; temp buffer.
+          (insert encoded-html)
+          (condition-case nil
+              ;; Fix undecoded text
+              (decode-coding-region (point-min) (point-max) 'utf-8)
+            (coding-system-error nil))
+          (buffer-string))))
+
+    (defun org-protocol-capture-html--eww-readable (html)
+      "Return `eww-readable' part of HTML with title.
+Returns list (HTML . TITLE)."
+      ;; Based on `eww-readable'
+      (let* ((dom (with-temp-buffer
+                    (insert html)
+                    (libxml-parse-html-region (point-min) (point-max))))
+             (title (caddr (car (dom-by-tag dom 'title)))))
+        (eww-score-readability dom)
+        (cons (with-temp-buffer
+                (shr-dom-print (eww-highest-readability dom))
+                (buffer-string))
+              title)))))
+
 ;;;; Helper functions
 
 (defun org-protocol-capture-html-do-capture ()
