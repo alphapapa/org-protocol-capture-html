@@ -71,7 +71,7 @@ do
             heading="$1"
             ;;
         -r|--readability)
-            protocol="capture-readability"
+            protocol="capture-eww-readable"
             readability=true
             ;;
         -t|--template)
@@ -147,4 +147,4 @@ html=$(urlencode <<<"$html") || die "Unable to urlencode HTML."
 
 # ** Send to Emacs
 
-emacsclient "org-protocol://$protocol://$template/$url/$heading/$html"
+emacsclient "org-protocol://$protocol?template=$template&url=$url&title=$heading&body=$html"

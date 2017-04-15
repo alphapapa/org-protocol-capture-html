@@ -3,8 +3,8 @@
 ;;; Commentary:
 
 ;; This package captures Web pages into Org-mode using Pandoc to
-;; process HTML.  It can also use python-readability to get article
-;; content.
+;; process HTML.  It can also use eww's eww-readable functionality to
+;; get the main content of a page.
 
 ;; These are the helper functions that run in Emacs.  To capture pages
 ;; into Emacs, you can use either a browser bookmarklet or the
@@ -33,7 +33,7 @@ You may want to increase this if you use a sub-heading in your capture template.
   "Option to pass to Pandoc to disable wrapping.  Pandoc >= 1.16
 deprecates `--no-wrap' in favor of `--wrap=none'.")
 
-(defun org-protocol-capture-html-define-pandoc-wrap-const ()
+(defun org-protocol-capture-html--define-pandoc-wrap-const ()
   "Set `org-protocol-capture-html-pandoc-no-wrap-option'."
   (setq org-protocol-capture-html-pandoc-no-wrap-option
         ;; Pandoc >= 1.16 deprecates the --no-wrap option, replacing it with
@@ -64,7 +64,7 @@ deprecates `--no-wrap' in favor of `--wrap=none'.")
 
 ;;;; Direct-to-Pandoc
 
-(defun org-protocol-capture-html-with-pandoc (data)
+(defun org-protocol-capture-html--with-pandoc (data)
   "Process an org-protocol://capture-html:// URL.
 
 This function is basically a copy of `org-protocol-do-capture', but
@@ -78,20 +78,18 @@ Pandoc, converting HTML to Org-mode."
   ;; it up, we might as well go ahead and run the capture directly.
 
   (unless org-protocol-capture-html-pandoc-no-wrap-option
-    (org-protocol-capture-html-define-pandoc-wrap-const))
+    (org-protocol-capture-html--define-pandoc-wrap-const))
 
-  (let* ((parts (org-protocol-split-data data t org-protocol-data-separator))
-	 (template (or (and (>= 2 (length (car parts))) (pop parts))
-		       org-protocol-default-template-key))
-	 (url (org-protocol-sanitize-uri (car parts)))
-	 (type (if (string-match "^\\([a-z]+\\):" url)
-		   (match-string 1 url)))
-	 (title (or (string-trim (cadr parts)) ""))
-	 (content (or (string-trim (caddr parts)) ""))
-	 (orglink (org-make-link-string
-		   url (if (string-match "[^[:space:]]" title) title url)))
-	 (query (or (org-protocol-convert-query-to-plist (cadddr parts)) ""))
-	 (org-capture-link-is-already-stored t)) ; avoid call to org-store-link
+  (let* ((template (or (plist-get data :template)
+                       org-protocol-default-template-key))
+         (url (org-protocol-sanitize-uri (plist-get data :url)))
+         (type (if (string-match "^\\([a-z]+\\):" url)
+                   (match-string 1 url)))
+         (title (or (org-protocol-capture-html--nbsp-to-space (string-trim (plist-get data :title))) ""))
+         (content (or (org-protocol-capture-html--nbsp-to-space (string-trim (plist-get data :body))) ""))
+         (orglink (org-make-link-string
+                   url (if (string-match "[^[:space:]]" title) title url)))
+         (org-capture-link-is-already-stored t)) ; avoid call to org-store-link
 
     (setq org-stored-links
           (cons (list url title) org-stored-links))
@@ -111,72 +109,13 @@ Pandoc, converting HTML to Org-mode."
                                 :description title
                                 :orglink orglink
                                 :initial (buffer-string)))))
-    (org-protocol-capture-html-do-capture)
+    (org-protocol-capture-html--do-capture)
     nil))
 
 (add-to-list 'org-protocol-protocol-alist
              '("capture-html"
                :protocol "capture-html"
-               :function org-protocol-capture-html-with-pandoc
-               :kill-client t))
-
-;;;; Readability
-
-(defun org-protocol-capture-readability (data)
-  "Capture content of URL with readability-lxml Python package."
-
-  (unless org-protocol-capture-html-pandoc-no-wrap-option
-    (org-protocol-capture-html-define-pandoc-wrap-const))
-
-  (let* ((parts (org-protocol-split-data data t org-protocol-data-separator))
-	 (template (or (and (>= 2 (length (car parts))) (pop parts))
-		       org-protocol-default-template-key))
-	 (url (org-protocol-sanitize-uri (car parts)))
-	 (type (if (string-match "^\\([a-z]+\\):" url)
-		   (match-string 1 url)))
-	 (title (or (string-trim (cadr parts)) ""))
-	 (content (or (string-trim (caddr parts)) ""))
-	 (orglink (org-make-link-string
-		   url (if (string-match "[^[:space:]]" title) title url)))
-	 (query (or (org-protocol-convert-query-to-plist (cadddr parts)) ""))
-         ;; Avoid call to org-store-link
-	 (org-capture-link-is-already-stored t))
-
-    (setq org-stored-links
-          (cons (list url title) org-stored-links))
-    (kill-new orglink)
-
-    (with-temp-buffer
-      (unless (= 0 (call-process "python" nil '(t t) nil  "-m" "readability.readability" "-u" url))
-        (error "Python readability-lxml script failed: %s" (buffer-string)))
-
-      ;; Get title if necessary
-      (goto-char (point-min))
-      (if (not (string= title ""))
-          (progn
-            ;; Skip first line containing page title; we already have it
-            (delete-region (point) (line-end-position)))
-        ;; Get title
-        (setq title (buffer-substring-no-properties (search-forward "Title:") (line-end-position)))
-        (setq orglink (org-make-link-string url (if (string-match "[^[:space:]]" title) title url))))
-
-      (unless (= 0 (call-process-region (point-min) (point-max) "pandoc" t t nil
-                                        "-f" "html" "-t" "org" org-protocol-capture-html-pandoc-no-wrap-option))
-        (error "Pandoc failed."))
-
-      (org-store-link-props :type type
-                            :annotation orglink
-                            :link url
-                            :description title
-                            :orglink orglink
-                            :initial (buffer-string)))
-    (org-protocol-capture-html-do-capture)
-    nil))
-
-(add-to-list 'org-protocol-protocol-alist
-             '("capture-readability"
-               :protocol "capture-readability"
-               :function org-protocol-capture-readability
+               :function org-protocol-capture-html--with-pandoc
                :kill-client t))
 
 ;;;; eww-readable
@@ -190,23 +129,22 @@ Pandoc, converting HTML to Org-mode."
              (require 'dom nil t)
              (fboundp 'eww-score-readability))
 
-    (defun org-protocol-capture-eww-readable (data)
+    (defun org-protocol-capture-html--capture-eww-readable (data)
       "Capture content of URL with eww-readable.."
 
       (unless org-protocol-capture-html-pandoc-no-wrap-option
-        (org-protocol-capture-html-define-pandoc-wrap-const))
+        (org-protocol-capture-html--define-pandoc-wrap-const))
 
-      (let* ((parts (org-protocol-split-data data t org-protocol-data-separator))
-             (template (or (and (>= 2 (length (car parts))) (pop parts))
+      (let* ((template (or (plist-get data :template)
                            org-protocol-default-template-key))
-             (url (org-protocol-sanitize-uri (car parts)))
+             (url (org-protocol-sanitize-uri (plist-get data :url)))
              (type (if (string-match "^\\([a-z]+\\):" url)
                        (match-string 1 url)))
              (html (org-protocol-capture-html--url-html url))
              (result (org-protocol-capture-html--eww-readable html))
              (title (cdr result))
              (content (with-temp-buffer
-                        (insert (car result))
+                        (insert (org-protocol-capture-html--nbsp-to-space (car result)))
                         ;; Convert to Org with Pandoc
                         (unless (= 0 (call-process-region (point-min) (point-max)
                                                           "pandoc" t t nil "-f" "html" "-t" "org"
@@ -224,7 +162,6 @@ Pandoc, converting HTML to Org-mode."
                         (buffer-string)))
              (orglink (org-make-link-string
                        url (if (string-match "[^[:space:]]" title) title url)))
-             (query (or (org-protocol-convert-query-to-plist (cadddr parts)) ""))
              ;; Avoid call to org-store-link
              (org-capture-link-is-already-stored t))
 
@@ -238,13 +175,13 @@ Pandoc, converting HTML to Org-mode."
                               :description title
                               :orglink orglink
                               :initial content)
-        (org-protocol-capture-html-do-capture)
+        (org-protocol-capture-html--do-capture)
         nil))
 
     (add-to-list 'org-protocol-protocol-alist
                  '("capture-eww-readable"
                    :protocol "capture-eww-readable"
-                   :function org-protocol-capture-eww-readable
+                   :function org-protocol-capture-html--capture-eww-readable
                    :kill-client t))
 
     (defun org-protocol-capture-html--url-html (url)
@@ -284,7 +221,13 @@ Returns list (HTML . TITLE)."
 
 ;;;; Helper functions
 
-(defun org-protocol-capture-html-do-capture ()
+(defun org-protocol-capture-html--nbsp-to-space (s)
+  "Convert HTML non-breaking spaces to plain spaces in S."
+  ;; Not sure why sometimes these are in the HTML and Pandoc converts
+  ;; them to underlines instead of spaces, but this fixes it.
+  (replace-regexp-in-string (rx "&nbsp;") " " s t t))
+
+(defun org-protocol-capture-html--do-capture ()
   "Call `org-capture' and demote page headings in capture buffer."
   (raise-frame)
   (funcall 'org-capture nil template)
