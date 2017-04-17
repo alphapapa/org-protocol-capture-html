@@ -18,6 +18,7 @@
 (require 'org-protocol)
 (require 'cl)
 (require 'subr-x)
+(require 's)
 
 ;;;; Vars
 
@@ -161,7 +162,7 @@ Pandoc, converting HTML to Org-mode."
                             (end-of-line)))
                         (buffer-string)))
              (orglink (org-make-link-string
-                       url (if (string-match "[^[:space:]]" title) title url)))
+                       url (if (s-present? title) title url)))
              ;; Avoid call to org-store-link
              (org-capture-link-is-already-stored t))
 

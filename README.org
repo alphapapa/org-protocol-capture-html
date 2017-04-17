@@ -31,6 +31,7 @@ Here's an example of what you get in Emacs from capturing [[http://kitchingroup.
 * Requirements
 
 + *[[http://orgmode.org/worg/org-contrib/org-protocol.html][org-protocol]]*: This is what connects org-mode to the "outside world" using a MIME protocol handler.  The instructions on the org-protocol page are a bit out of date, so you might want to try [[#org-protocol-instructions][these instructions]] instead.
++ [[https://github.com/magnars/s.el][s.el]]
 + *Pandoc*: Version 1.8 or later is required.
 + The shell script uses =curl= to download URLs (if you use it in that mode).
 
@@ -138,6 +139,11 @@ org-protocol-capture-html.sh -h "TODO Feed the cat!" -t i "He gets grouchy if I 
 #+END_SRC
 
 * Changelog                                                      :noexport_1:
+
+** <2017-04-17>
+
++  Use [[https://github.com/magnars/s.el][s.el]].
++  Handle empty titles from =dom=.
 
 ** <2017-04-15>
 
