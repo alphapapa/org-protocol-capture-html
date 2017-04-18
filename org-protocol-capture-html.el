@@ -190,9 +190,8 @@ Pandoc, converting HTML to Org-mode."
       (let* ((response-buffer (url-retrieve-synchronously url nil t))
              (encoded-html (with-current-buffer response-buffer
                              (pop-to-buffer response-buffer)
-                             ;; Skip HTTP headers
-                             (re-search-forward (rx bol eol) nil t)
-                             (delete-region (point-min) (point))
+                             ;; Skip HTTP headers, using marker provided by url-http
+                             (delete-region (point-min) (1+ url-http-end-of-headers))
                              (buffer-string))))
         (kill-buffer response-buffer)     ; Not sure if necessary to avoid leaking buffer
         (with-temp-buffer
