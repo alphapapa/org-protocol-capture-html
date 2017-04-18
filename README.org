@@ -144,6 +144,7 @@ org-protocol-capture-html.sh -h "TODO Feed the cat!" -t i "He gets grouchy if I 
 
 +  Use [[https://github.com/magnars/s.el][s.el]].
 +  Handle empty titles from =dom=.
++  Skip HTTP headers more reliably in the =eww-readable= support.
 
 ** <2017-04-15>
 
