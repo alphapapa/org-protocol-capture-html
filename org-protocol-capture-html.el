@@ -209,7 +209,13 @@ Pandoc, converting HTML to Org-mode."
       "Return `eww-readable' part of HTML with title.
 Returns list (HTML . TITLE)."
       ;; Based on `eww-readable'
-      (let* ((dom (with-temp-buffer
+      (let* ((html
+              ;; Convert "&nbsp;" in HTML to plain spaces.
+              ;; `libxml-parse-html-region' turns them into
+              ;; underlines.  The closest I can find to an explanation
+              ;; is at <http://www.perlmonks.org/?node_id=825188>.
+              (org-protocol-capture-html--nbsp-to-space html))
+             (dom (with-temp-buffer
                     (insert html)
                     (libxml-parse-html-region (point-min) (point-max))))
              (title (caddr (car (dom-by-tag dom 'title)))))
