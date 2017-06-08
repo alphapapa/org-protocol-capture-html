@@ -151,7 +151,11 @@ Pandoc, converting HTML to Org-mode."
                                                           "pandoc" t t nil "-f" "html" "-t" "org"
                                                           org-protocol-capture-html-pandoc-no-wrap-option))
                           (error "Pandoc failed."))
-                        (remove-dos-crlf)
+                        (save-excursion
+                          ;; Remove DOS CR/LF line endings
+                          (goto-char (point-min))
+                          (while (search-forward (string ?\C-m) nil t)
+                            (replace-match "")))
                         ;; Demote page headings in capture buffer to below the
                         ;; top-level Org heading and "Article" 2nd-level heading
                         (save-excursion
