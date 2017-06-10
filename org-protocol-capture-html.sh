@@ -52,7 +52,8 @@ function urlencode {
 
 # * Args
 
-args=$(getopt -n "$0" -o dh:rt:u: -l debug,help,heading:,readability,template:,url: -- "$@") || exit 1
+args=$(getopt -n "$0" -o dh:rt:u: -l debug,help,heading:,readability,template:,url: -- "$@") \
+    || die "Unable to parse args.  Is getopt installed?"
 eval set -- "$args"
 
 while true

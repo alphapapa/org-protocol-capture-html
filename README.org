@@ -103,7 +103,9 @@ These bookmarklets work in Chrome:
 
 * Shell script
 
-The [[org-protocol-capture-html.sh][shell script]] is handy for piping any HTML (or plain-text) content to Org through the shell, or downloading and capturing any URL directly (without a browser), but it's not required.  You can use it like this:
+The [[org-protocol-capture-html.sh][shell script]] is handy for piping any HTML (or plain-text) content to Org through the shell, or downloading and capturing any URL directly (without a browser), but it's not required.  It requires =getopt=, part of the =util-linux= package which should be standard on most Linux distros.  On OS X you may need to install =getopt= or =util-linux= from MacPorts or Homebrew, etc.
+
+You can use it like this:
 
 #+BEGIN_EXAMPLE
 org-protocol-capture-html.sh [OPTIONS] [HTML]
