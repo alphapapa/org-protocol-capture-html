@@ -197,6 +197,7 @@ Hopefully this puts issue #12 to rest for good.  Thanks to [[https://github.com/
 * Credits
 
 + Thanks to [[https://github.com/jguenther][@jguenther]] for helping to fix issue #12.
++ Thanks to [[https://github.com/xuchunyang][@xuchunyang]] for finding and fixing #17 and #19.
 
 * Appendix
 
