@@ -58,7 +58,7 @@ deprecates `--no-wrap' in favor of `--wrap=none'.")
                     (error "Unable to test Pandoc!  Please report this bug! (include the output of \"pandoc --dump-args --no-wrap\")"))
                 (sleep-for 0.2)
                 (cl-incf checked)))
-            (if (and (= 0 (process-exit-status process))
+            (if (and (zerop (process-exit-status process))
                      (not (string-match "--no-wrap is deprecated" (buffer-string))))
                 "--no-wrap"
               "--wrap=none")))))
@@ -98,9 +98,9 @@ Pandoc, converting HTML to Org-mode."
 
     (with-temp-buffer
       (insert content)
-      (if (not (= 0 (call-process-region
-                     (point-min) (point-max)
-                     "pandoc" t t nil "-f" "html" "-t" "org" org-protocol-capture-html-pandoc-no-wrap-option)))
+      (if (not (zerop (call-process-region
+                       (point-min) (point-max)
+                       "pandoc" t t nil "-f" "html" "-t" "org" org-protocol-capture-html-pandoc-no-wrap-option)))
           (message "Pandoc failed: %s" (buffer-string))
         (progn
           ;; Pandoc succeeded
