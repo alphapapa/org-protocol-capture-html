@@ -47,7 +47,7 @@ EOF
 }
 
 function urlencode {
-    python -c "import sys, urllib; print urllib.quote(sys.stdin.read()[:-1], safe='')"
+    python2 -c "import sys, urllib; print urllib.quote(sys.stdin.read()[:-1], safe='')"
 }
 
 # * Args

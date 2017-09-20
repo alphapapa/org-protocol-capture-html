@@ -80,6 +80,11 @@ deprecates `--no-wrap' in favor of `--wrap=none'.")
 
 ;;;; Direct-to-Pandoc
 
+(defun org-protocol-capture-html--remove-html-blocks-from-string (s)
+  "Remove \"#+BEGIN_HTML...#+END_HTML\" blocks from Org-formatted string S."
+  (replace-regexp-in-string (rx (optional "\n") "#+BEGIN_HTML" (minimal-match (1+ anything)) "#+END_HTML" (optional "\n"))
+                            "" s 'fixedcase 'literal))
+
 (defun org-protocol-capture-html--with-pandoc (data)
   "Process an org-protocol://capture-html:// URL.
 
@@ -124,7 +129,7 @@ Pandoc, converting HTML to Org-mode."
                                 :link url
                                 :description title
                                 :orglink orglink
-                                :initial (buffer-string)))))
+                                :initial ((org-protocol-capture-html--remove-html-blocks-from-string buffer-string))))))
     (org-protocol-capture-html--do-capture)
     nil))
 
