@@ -129,7 +129,7 @@ Pandoc, converting HTML to Org-mode."
                                 :link url
                                 :description title
                                 :orglink orglink
-                                :initial ((org-protocol-capture-html--remove-html-blocks-from-string buffer-string))))))
+                                :initial (org-protocol-capture-html--remove-html-blocks-from-string (buffer-string))))))
     (org-protocol-capture-html--do-capture)
     nil))
 
