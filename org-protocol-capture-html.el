@@ -1,5 +1,10 @@
 ;;; org-protocol-capture-html.el --- Capture HTML with org-protocol
 
+;; Author: 
+;; URL: http://github.com/alphapapa/org-protocol-capture-html
+;; Package-Requires: ((emacs "25") (org "9"))
+;; Version: 0.1
+
 ;;; Commentary:
 
 ;; This package captures Web pages into Org-mode using Pandoc to
