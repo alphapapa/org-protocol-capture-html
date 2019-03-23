@@ -48,14 +48,14 @@ EOF
 
 function urlencode {
     python -c "
+from __future__ import print_function
 try:
     from urllib import quote  # Python 2
 except ImportError:
     from urllib.parse import quote  # Python 3
+import sys
 
-import sys, urllib
-
-print urllib.quote(sys.stdin.read()[:-1], safe='')"
+print(quote(sys.stdin.read()[:-1], safe=''))"
 }
 
 # * Args

@@ -142,6 +142,10 @@ org-protocol-capture-html.sh -h "TODO Feed the cat!" -t i "He gets grouchy if I 
 
 * Changelog                                                      :noexport_1:
 
+** <2019-05-12>
+
++  Python 2-3 compatibility fixes in =org-protocol-capture-html.sh=.  ([[https://github.com/alphapapa/org-protocol-capture-html/pull/31][#31]].  Thanks to [[https://github.com/samspills][Sam Pillsworth]].)
+
 ** <2017-04-17>
 
 +  Use [[https://github.com/magnars/s.el][s.el]].
