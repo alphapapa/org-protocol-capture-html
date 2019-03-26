@@ -27,6 +27,7 @@ Here's an example of what you get in Emacs from capturing [[http://kitchingroup.
      - [[#org-protocol-instructions][org-protocol Instructions]]
      - [[#selection-grabbing-function][Selection-grabbing function]]
  - [[#to-do][To-Do]]
+    - [[#instruction-for-spacemacs-distribution][Instruction for Spacemacs distribution]]
 
 * Requirements
 
@@ -53,7 +54,20 @@ You need a suitable =org-capture= template.  I recommend this one.  Whatever you
   (file "")
   "* %a :website:\n\n%U %?\n\n%:initial")
 #+END_SRC
+*** Instruction for Spacemacs distribution
 
+Add repository as a submodule of Spacemacs config:
+#+begin_src sh
+git submodule add https://github.com/alphapapa/org-protocol-capture-html.git ~/.spacemacs.d/lisp/org-protocol-capture-html
+#+end_src
+
+In =~/.spacemacs.d/init.el= add into =(defun dotspacemacs/user-config () ... )=:
+#+begin_src elisp
+;; Add to (setq org-capture-templates `(...)) provided in this README org-capture template
+
+(add-to-list 'load-path "~/.spacemacs.d/lisp/org-protocol-capture-html")
+(require 'org-protocol-capture-html)
+#+end_src
 ** Bookmarklets
 
 Now you need to make a bookmarklet in your browser(s) of choice.  You can select text in the page when you capture and it will be copied into the template, or you can just capture the page title and URL.  A [[#selection-grabbing-function][selection-grabbing function]] is used to capture the selection.
