@@ -27,6 +27,10 @@ Here's an example of what you get in Emacs from capturing [[http://kitchingroup.
      - [[#org-protocol-instructions][org-protocol Instructions]]
      - [[#selection-grabbing-function][Selection-grabbing function]]
  - [[#to-do][To-Do]]
+    - [[#register-emacsclientemacs-as-the-org-protocol-link-handler-in-your-de][Register emacsclient/emacs as the =org-protocol= link handler in your DE]]
+      - [[#under-linux][Under Linux]]
+        - [[#for-kde4][For KDE4]]
+          - [[#note-this-is-a-workaround-to-issue-16---see-comment][Note: This is a workaround to issue #16 - See comment]]
 
 * Requirements
 
@@ -100,6 +104,96 @@ These bookmarklets work in Chrome:
 #+END_SRC
 
 *Note:* The first sets of slashes are tripled compared to the Firefox bookmarklets.  When testing with Chrome, I found that =xdg-open= was collapsing the double-slashes into single-slashes, which breaks =org-protocol=.  I'm not sure why that doesn't seem to be necessary for Firefox.  If you have any trouble with this, you might try removing the extra slashes.
+
+
+*** Register emacsclient/emacs as the =org-protocol= link handler in your DE
+    :PROPERTIES:
+    :CUSTOM_ID: register-emacsclient-as-the-org-protocol-handler
+    :END:
+
+**** Under Linux
+     :PROPERTIES:
+     :CUSTOM_ID: under-linux
+     :END:
+
+For KDE Plasma 5 - first see if [KDE5 feature request](https://bugs.kde.org/show_bug.cgi?id=401604) resolved - if so
+use `System Settings -> Applications`.
+
+#+BEGIN_SRC sh
+    cat > "${HOME}/.local/share/applications/org-protocol.desktop" << EOF
+    [Desktop Entry]
+    Name=org-protocol
+    Exec=emacsclient %u
+    Type=Application
+    Terminal=false
+    Categories=System;
+    MimeType=x-scheme-handler/org-protocol;
+    EOF
+#+END_SRC
+
+And then, for GTK-based DE:
+
+#+BEGIN_SRC sh
+    update-desktop-database ~/.local/share/applications/
+#+END_SRC
+
+For KDE5:
+
+#+BEGIN_SRC sh
+    kbuildsycoca5
+    xdg-mime default org-protocol.desktop x-scheme-handler/org-protocol
+#+END_SRC
+
+***** For KDE4
+      :PROPERTIES:
+      :CUSTOM_ID: for-kde4
+      :END:
+
+****** Note: This is a workaround to issue #16 - See comment
+[[https://github.com/sprig/org-capture-extension/issues/16#issuecomment-305050310][here]]
+       :PROPERTIES:
+       :CUSTOM_ID: note-this-is-a-workaround-to-issue-16---see-comment-here
+       :END:
+
+Create the file //usr/local/bin/emacs-capture/
+
+#+BEGIN_SRC sh
+    #!/bin/bash
+
+    # HACK: workaround for a kde-open bug (feature?) that might have
+    #       eaten a colon from our argument, om nom nom
+    argv=()
+    for arg in "$@"; do
+        re='s_^org-protocol:/+capture:?/+_org-protocol://capture://_'
+        argv+=("$(echo -n "$arg" | sed -Ez "$re")")
+    done
+
+    # Note: feel free to add any other arguments you want,
+    #  e.g. emacsclient --alternate-editor= -c "${argv[@]}"
+    emacsclient "${argv[@]}"
+#+END_SRC
+
+And the file
+
+/$HOME/.local/share/applications/emacs-capture.desktop/
+
+#+BEGIN_EXAMPLE
+    #!/usr/bin/env xdg-open
+    [Desktop Entry]
+    Name=Emacs Client
+    Exec=emacs-capture "%u"
+    Icon=emacs-icon
+    Type=Application
+    Terminal=false
+    MimeType=x-scheme-handler/org-protocol;
+#+END_EXAMPLE
+
+Finally, run
+
+#+BEGIN_SRC sh
+    kbuildsycoca4
+    sudo update-desktop-database
+#+END_SRC
 
 * Shell script
 
