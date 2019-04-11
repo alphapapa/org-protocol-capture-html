@@ -18,7 +18,7 @@ Here's an example of what you get in Emacs from capturing [[http://kitchingroup.
  - [[#requirements][Requirements]]
  - [[#installation][Installation]]
      - [[#emacs][Emacs]]
-     - [[#bookmarklets][Bookmarklets]]
+     - [[#browser-side-script][Browser-side script]]
  - [[#shell-script][Shell script]]
  - [[#usage][Usage]]
  - [[#changelog][Changelog]]
@@ -54,11 +54,17 @@ You need a suitable =org-capture= template.  I recommend this one.  Whatever you
   "* %a :website:\n\n%U %?\n\n%:initial")
 #+END_SRC
 
-** Bookmarklets
+** Browser-side script
 
-Now you need to make a bookmarklet in your browser(s) of choice.  You can select text in the page when you capture and it will be copied into the template, or you can just capture the page title and URL.  A [[#selection-grabbing-function][selection-grabbing function]] is used to capture the selection.
+Script has two modes:
+  * If there is no selected text on page - script captures page title and URL and presents record to you in the capture buffer. This opens the door for bookmarking in Emacs.
+  * If the content is selected on the page - content going to be converted to Org and presented to you in the capture buffer. This opens the door for saving tidbits and web-archiving in Emacs.
 
-*Note:* The =w= in the URL in these bookmarklets chooses the corresponding capture template. You can leave it out if you want to be prompted for the template, or change it to another letter for a different template key.
+A [[#selection-grabbing-function][selection-grabbing function]] is used to capture the selection.
+
+Now let's make a script work in your browser.
+
+*Note:* The =w= in the URL in these instructions chooses the corresponding capture template. You can leave it out if you want to be prompted for the template, or change it to another letter for a different template key.
 
 *** Firefox
 
