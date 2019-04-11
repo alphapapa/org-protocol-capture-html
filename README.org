@@ -76,6 +76,19 @@ This one uses =eww='s built-in readability-scoring function in Emacs 25.1 and up
 
 *Note:* When you click on one of these bookmarklets for the first time, Firefox will ask what program to use to handle the =org-protocol= protocol.  You can simply choose the default program that appears (=org-protocol=).
 
+*** Tridactyl
+
+[[https://github.com/tridactyl/tridactyl][Tridactyl]] setup:
+
+#+BEGIN_SRC js
+// See if key is binded:
+:bind <key>
+// Observe is it empty `:# <key> = `. If it not - choose other key, or do `:unbind <key>`.
+
+// Launch script on keypress:
+:bind <key> js javascript:location.href = 'org-protocol://capture-html?template=w&url=' + encodeURIComponent(location.href) + '&title=' + encodeURIComponent(document.title || "[untitled page]") + '&body=' + encodeURIComponent(function () {var html = ""; if (typeof document.getSelection != "undefined") {var sel = document.getSelection(); if (sel.rangeCount) {var container = document.createElement("div"); for (var i = 0, len = sel.rangeCount; i < len; ++i) {container.appendChild(sel.getRangeAt(i).cloneContents());} html = container.innerHTML;}} else if (typeof document.selection != "undefined") {if (document.selection.type == "Text") {html = document.selection.createRange().htmlText;}} var relToAbs = function (href) {var a = document.createElement("a"); a.href = href; var abs = a.protocol + "//" + a.host + a.pathname + a.search + a.hash; a.remove(); return abs;}; var elementTypes = [['a', 'href'], ['img', 'src']]; var div = document.createElement('div'); div.innerHTML = html; elementTypes.map(function(elementType) {var elements = div.getElementsByTagName(elementType[0]); for (var i = 0; i < elements.length; i++) {elements[i].setAttribute(elementType[1], relToAbs(elements[i].getAttribute(elementType[1])));}}); return div.innerHTML;}());
+#+END_SRC
+
 *** Pentadactyl
 
 If you use [[http://5digits.org/pentadactyl/][Pentadactyl]], you can use the Firefox *bookmarklets* above, or you can put these *commands* in your =.pentadactylrc=:
