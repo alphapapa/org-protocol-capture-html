@@ -230,6 +230,7 @@ Then update =~/.local/share/applications/mimeinfo.cache= by running:
 -  On KDE: =kbuildsycoca4=
 -  On GNOME: =update-desktop-database ~/.local/share/applications/=
 
+Or manually adding =x-scheme-handler/org-protocol=org-protocol.desktop= to the [Added Associations] section of =~/.local/share/applications/mimeapps.list=
 *** 2. Configure Emacs
 
 **** Init file
