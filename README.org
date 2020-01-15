@@ -289,28 +289,7 @@ Hopefully this puts issue #12 to rest for good.  Thanks to [[https://github.com/
 
 ** org-protocol Instructions
 
-*** 1. Add protocol handler
-
-Create the file =~/.local/share/applications/org-protocol.desktop= containing:
-
-#+BEGIN_SRC conf
-  [Desktop Entry]
-  Name=org-protocol
-  Exec=emacsclient %u
-  Type=Application
-  Terminal=false
-  Categories=System;
-  MimeType=x-scheme-handler/org-protocol;
-#+END_SRC
-
-*Note:* Each line's key must be capitalized exactly as displayed, or it will be an invalid =.desktop= file.
-
-Then update =~/.local/share/applications/mimeinfo.cache= by running:
-
--  On KDE: =kbuildsycoca4=
--  On GNOME: =update-desktop-database ~/.local/share/applications/=
-
-*** 2. Configure Emacs
+*** 1. Configure Emacs
 
 **** Init file
 
@@ -340,7 +319,7 @@ This will result in a capture like this:
    [2015-09-29 Tue 11:09] About org-protocol.el org-protocol.el is based on code and ideas from org-annotation-helper.el and org-browser-url.el.
 #+END_SRC
 
-*** 3. Configure Firefox
+*** 2. Configure Firefox
 
 On some versions of Firefox, it may be necessary to add this setting. You may skip this step and come back to it if you get an error saying that Firefox doesn't know how to handle =org-protocol= links.
 
