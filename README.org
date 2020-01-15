@@ -21,7 +21,6 @@ Here's an example of what you get in Emacs from capturing [[http://kitchingroup.
      - [[#bookmarklets][Bookmarklets]]
  - [[#shell-script][Shell script]]
  - [[#usage][Usage]]
- - [[#credits][Credits]]
  - [[#appendix][Appendix]]
      - [[#org-protocol-instructions][org-protocol Instructions]]
      - [[#selection-grabbing-function][Selection-grabbing function]]
@@ -29,6 +28,7 @@ Here's an example of what you get in Emacs from capturing [[http://kitchingroup.
   - [[#register-emacsclientemacs-as-the-org-protocol-link-handler-in-your-desktop][Register emacsclient/emacs as the org-protocol link handler in your desktop]]
     - [[#kde4][KDE4]]
 - [[#changelog][Changelog]]
+- [[#credits][Credits]]
 
 * Requirements
 
@@ -247,11 +247,6 @@ org-protocol-capture-html.sh -h "TODO Feed the cat!" -t i "He gets grouchy if I 
 #+END_SRC
 
 
-* Credits
-
-+ Thanks to [[https://github.com/jguenther][@jguenther]] for helping to fix issue #12.
-+ Thanks to [[https://github.com/xuchunyang][@xuchunyang]] for finding and fixing #17 and #19.
-
 * Appendix
 
 ** Selection-grabbing function
@@ -406,3 +401,8 @@ Hopefully this puts issue #12 to rest for good.  Thanks to [[https://github.com/
 
 + Add URL downloading to the shell script.  Now you can run =org-protocol-capture-html.sh -u http://example.com= and it will download and capture the page.
 + Add =org-capture= template to the readme.  This will make it much easier for new users.
+
+* Credits
+
++ Thanks to [[https://github.com/jguenther][@jguenther]] for helping to fix issue #12.
++ Thanks to [[https://github.com/xuchunyang][@xuchunyang]] for finding and fixing #17 and #19.
