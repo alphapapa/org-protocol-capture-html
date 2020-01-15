@@ -96,6 +96,14 @@ This one uses =eww='s built-in readability-scoring function in Emacs 25.1 and up
 
 *Note:* When you click on one of these bookmarklets for the first time, Firefox will ask what program to use to handle the =org-protocol= protocol.  You can simply choose the default program that appears (=org-protocol=).
 
+**** Old versions of Firefox
+
+On some old versions of Firefox, it may be necessary to add the following setting. You may skip this step and come back to it if you get an error saying that Firefox doesn't know how to handle =org-protocol= links.
+
+Open =about:config= and create a new =boolean= value named =network.protocol-handler.expose.org-protocol= and set it to =true=.
+
+*Note:* If you do skip this step, and you do encounter the error, Firefox may replace all open tabs in the window with the error message, making it difficult or impossible to recover those tabs. It's best to use a new window with a throwaway tab to test this setup until you know it's working.
+
 *** Pentadactyl
 
 If you use [[http://5digits.org/pentadactyl/][Pentadactyl]], you can use the Firefox *bookmarklets* above, or you can put these *commands* in your =.pentadactylrc=:
@@ -245,19 +253,6 @@ org-protocol-capture-html.sh -h "TODO Feed the cat!" -t i "He gets grouchy if I 
 + Thanks to [[https://github.com/xuchunyang][@xuchunyang]] for finding and fixing #17 and #19.
 
 * Appendix
-
-** org-protocol Instructions
-
-*** 1. Configure Emacs
-
-
-*** 2. Configure Firefox
-
-On some versions of Firefox, it may be necessary to add this setting. You may skip this step and come back to it if you get an error saying that Firefox doesn't know how to handle =org-protocol= links.
-
-Open =about:config= and create a new =boolean= value named =network.protocol-handler.expose.org-protocol= and set it to =true=.
-
-*Note:* If you do skip this step, and you do encounter the error, Firefox may replace all open tabs in the window with the error message, making it difficult or impossible to recover those tabs. It's best to use a new window with a throwaway tab to test this setup until you know it's working.
 
 ** Selection-grabbing function
 
