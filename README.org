@@ -6,7 +6,7 @@
 
 * org-protocol-capture-html                                        :noexport:
 
-org-protocol is awesome, but browsers do a pretty poor job of turning a page's HTML content into plain-text.  However, Pandoc supports converting /from/ HTML /to/ org-mode, so we can use it to turn HTML into Org-mode content!  It can even turn HTML tables into Org tables!
+Allows select and =org-capture= web page parts & links important for you, converts and stores them in the =org-mode= markup. Effectively turing everything into a movie about the Emacs hacker rogue that hoards everything he likes into his web archive stash.
 
 * Screenshot                                                       :noexport:
 
