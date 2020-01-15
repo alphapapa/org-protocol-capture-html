@@ -27,9 +27,8 @@ Here's an example of what you get in Emacs from capturing [[http://kitchingroup.
      - [[#org-protocol-instructions][org-protocol Instructions]]
      - [[#selection-grabbing-function][Selection-grabbing function]]
  - [[#to-do][To-Do]]
-        - [[#for-kde4][For KDE4]]
-          - [[#note-this-is-a-workaround-to-issue-16---see-comment][Note: This is a workaround to issue #16 - See comment]]
   - [[#register-emacsclientemacs-as-the-org-protocol-link-handler-in-your-desktop][Register emacsclient/emacs as the org-protocol link handler in your desktop]]
+    - [[#kde4][KDE4]]
 
 * Requirements
 
@@ -136,18 +135,14 @@ For KDE Plasma 5:
     xdg-mime default org-protocol.desktop x-scheme-handler/org-protocol
 #+END_SRC
 
-**** For KDE4
+*** KDE4
       :PROPERTIES:
       :CUSTOM_ID: for-kde4
       :END:
 
-***** Note: This is a workaround to issue #16 - See comment
-[[https://github.com/sprig/org-capture-extension/issues/16#issuecomment-305050310][here]]
-       :PROPERTIES:
-       :CUSTOM_ID: note-this-is-a-workaround-to-issue-16---see-comment-here
-       :END:
+/Note: here is a workaround to issue seen [[https://github.com/sprig/org-capture-extension/issues/16#issuecomment-305050310][here]]/
 
-Create the file //usr/local/bin/emacs-capture/
+Create the file =emacs-capture= that would be seen in the =PATH=:
 
 #+BEGIN_SRC sh
     #!/bin/bash
@@ -165,10 +160,9 @@ Create the file //usr/local/bin/emacs-capture/
     emacsclient "${argv[@]}"
 #+END_SRC
 
-And the file
+Create MIME desktop entry:
 
-/$HOME/.local/share/applications/emacs-capture.desktop/
-
+=~/.local/share/applications/emacs-capture.desktop=
 #+BEGIN_EXAMPLE
     #!/usr/bin/env xdg-open
     [Desktop Entry]
@@ -180,7 +174,7 @@ And the file
     MimeType=x-scheme-handler/org-protocol;
 #+END_EXAMPLE
 
-Finally, run
+After that, run:
 
 #+BEGIN_SRC sh
     kbuildsycoca4
