@@ -112,27 +112,27 @@ These bookmarklets work in Chrome:
 For KDE Plasma 5 - first see if [KDE5 feature request](https://bugs.kde.org/show_bug.cgi?id=401604) resolved - if so - just use =System Settings -> Applications=, and send report/update to us.
 
 Create the =~/.local/share/applications/org-protocol.desktop= with content:
-#+BEGIN_SRC text
-    [Desktop Entry]
-    Name=org-protocol
-    Exec=emacsclient %u
-    Type=Application
-    Terminal=false
-    Categories=System;
-    MimeType=x-scheme-handler/org-protocol;
+#+BEGIN_SRC conf
+[Desktop Entry]
+Name=org-protocol
+Exec=emacsclient %u
+Type=Application
+Terminal=false
+Categories=System;
+MimeType=x-scheme-handler/org-protocol;
 #+END_SRC
 
-And then, for GTK-based DE:
+- On GTK-based DE:
 
-#+BEGIN_SRC sh
-    update-desktop-database ~/.local/share/applications/
+#+BEGIN_SRC fish
+update-desktop-database ~/.local/share/applications/
 #+END_SRC
 
-For KDE Plasma 5:
+- On KDE Plasma 5:
 
-#+BEGIN_SRC sh
-    kbuildsycoca5
-    xdg-mime default org-protocol.desktop x-scheme-handler/org-protocol
+#+BEGIN_SRC fish
+kbuildsycoca5
+xdg-mime default org-protocol.desktop x-scheme-handler/org-protocol
 #+END_SRC
 
 *** KDE4
