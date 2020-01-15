@@ -27,10 +27,9 @@ Here's an example of what you get in Emacs from capturing [[http://kitchingroup.
      - [[#org-protocol-instructions][org-protocol Instructions]]
      - [[#selection-grabbing-function][Selection-grabbing function]]
  - [[#to-do][To-Do]]
-    - [[#register-emacsclientemacs-as-the-org-protocol-link-handler-in-your-de][Register emacsclient/emacs as the =org-protocol= link handler in your DE]]
-      - [[#under-linux][Under Linux]]
         - [[#for-kde4][For KDE4]]
           - [[#note-this-is-a-workaround-to-issue-16---see-comment][Note: This is a workaround to issue #16 - See comment]]
+  - [[#register-emacsclientemacs-as-the-org-protocol-link-handler-in-your-desktop][Register emacsclient/emacs as the org-protocol link handler in your desktop]]
 
 * Requirements
 
@@ -106,21 +105,15 @@ These bookmarklets work in Chrome:
 *Note:* The first sets of slashes are tripled compared to the Firefox bookmarklets.  When testing with Chrome, I found that =xdg-open= was collapsing the double-slashes into single-slashes, which breaks =org-protocol=.  I'm not sure why that doesn't seem to be necessary for Firefox.  If you have any trouble with this, you might try removing the extra slashes.
 
 
-*** Register emacsclient/emacs as the =org-protocol= link handler in your DE
+** Register emacsclient/emacs as the org-protocol link handler in your desktop
     :PROPERTIES:
     :CUSTOM_ID: register-emacsclient-as-the-org-protocol-handler
     :END:
 
-**** Under Linux
-     :PROPERTIES:
-     :CUSTOM_ID: under-linux
-     :END:
+For KDE Plasma 5 - first see if [KDE5 feature request](https://bugs.kde.org/show_bug.cgi?id=401604) resolved - if so - just use =System Settings -> Applications=, and send report/update to us.
 
-For KDE Plasma 5 - first see if [KDE5 feature request](https://bugs.kde.org/show_bug.cgi?id=401604) resolved - if so
-use `System Settings -> Applications`.
-
-#+BEGIN_SRC sh
-    cat > "${HOME}/.local/share/applications/org-protocol.desktop" << EOF
+Create the =~/.local/share/applications/org-protocol.desktop= with content:
+#+BEGIN_SRC text
     [Desktop Entry]
     Name=org-protocol
     Exec=emacsclient %u
@@ -128,7 +121,6 @@ use `System Settings -> Applications`.
     Terminal=false
     Categories=System;
     MimeType=x-scheme-handler/org-protocol;
-    EOF
 #+END_SRC
 
 And then, for GTK-based DE:
@@ -137,19 +129,19 @@ And then, for GTK-based DE:
     update-desktop-database ~/.local/share/applications/
 #+END_SRC
 
-For KDE5:
+For KDE Plasma 5:
 
 #+BEGIN_SRC sh
     kbuildsycoca5
     xdg-mime default org-protocol.desktop x-scheme-handler/org-protocol
 #+END_SRC
 
-***** For KDE4
+**** For KDE4
       :PROPERTIES:
       :CUSTOM_ID: for-kde4
       :END:
 
-****** Note: This is a workaround to issue #16 - See comment
+***** Note: This is a workaround to issue #16 - See comment
 [[https://github.com/sprig/org-capture-extension/issues/16#issuecomment-305050310][here]]
        :PROPERTIES:
        :CUSTOM_ID: note-this-is-a-workaround-to-issue-16---see-comment-here
