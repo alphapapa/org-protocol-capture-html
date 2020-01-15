@@ -40,6 +40,12 @@ Here's an example of what you get in Emacs from capturing [[http://kitchingroup.
 * Installation
 ** Emacs
 
+Be sure =org-protocol= is loaded, and Emacs is ready to recieve connections:
+#+BEGIN_SRC elisp
+(server-start)
+(require 'org-protocol)
+#+END_SRC
+
 Put =org-protocol-capture-html.el= in your =load-path= and add to your init file:
 
 #+BEGIN_SRC elisp
@@ -232,14 +238,6 @@ org-protocol-capture-html.sh -h "TODO Feed the cat!" -t i "He gets grouchy if I 
 
 *** 1. Configure Emacs
 
-**** Init file
-
-Add to your Emacs init file:
-
-#+BEGIN_SRC elisp
-    (server-start)
-    (require 'org-protocol)
-#+END_SRC
 
 **** Capture template
 
