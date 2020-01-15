@@ -139,7 +139,7 @@ javascript:location.href = 'org-protocol:///capture-eww-readable?template=w&url=
     :CUSTOM_ID: register-emacsclient-as-the-org-protocol-handler
     :END:
 
-For KDE Plasma 5 - first see if [KDE5 feature request](https://bugs.kde.org/show_bug.cgi?id=401604) resolved - if so - just use =System Settings -> Applications=, and send report/update to us.
+For KDE Plasma 5 - first see if [[https://bugs.kde.org/show_bug.cgi?id=401604][KDE5 feature request]] resolved - if so - just use =System Settings -> Applications=, and send report/update to us.
 
 Create the =~/.local/share/applications/org-protocol.desktop= with content:
 #+BEGIN_SRC conf
