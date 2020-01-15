@@ -21,7 +21,6 @@ Here's an example of what you get in Emacs from capturing [[http://kitchingroup.
      - [[#bookmarklets][Bookmarklets]]
  - [[#shell-script][Shell script]]
  - [[#usage][Usage]]
- - [[#changelog][Changelog]]
  - [[#credits][Credits]]
  - [[#appendix][Appendix]]
      - [[#org-protocol-instructions][org-protocol Instructions]]
@@ -29,6 +28,7 @@ Here's an example of what you get in Emacs from capturing [[http://kitchingroup.
  - [[#to-do][To-Do]]
   - [[#register-emacsclientemacs-as-the-org-protocol-link-handler-in-your-desktop][Register emacsclient/emacs as the org-protocol link handler in your desktop]]
     - [[#kde4][KDE4]]
+- [[#changelog][Changelog]]
 
 * Requirements
 
@@ -220,65 +220,6 @@ org-protocol-capture-html.sh --readability --url "https://lwn.net/Articles/61522
 org-protocol-capture-html.sh -h "TODO Feed the cat!" -t i "He gets grouchy if I forget!"
 #+END_SRC
 
-* Changelog                                                      :noexport_1:
-
-** <2019-05-12>
-
-+  Python 2-3 compatibility fixes in =org-protocol-capture-html.sh=.  ([[https://github.com/alphapapa/org-protocol-capture-html/pull/31][#31]].  Thanks to [[https://github.com/samspills][Sam Pillsworth]].)
-
-** <2017-04-17>
-
-+  Use [[https://github.com/magnars/s.el][s.el]].
-+  Handle empty titles from =dom=.
-+  Skip HTTP headers more reliably in the =eww-readable= support.
-
-** <2017-04-15>
-
-+  Switch from old-style =org-protocol= links to the new-style ones used in Org 9.  *Note*: This requires updating existing bookmarklets to use the new-style links.  See the examples in the usage instructions.  Users who are unable to upgrade to Org 9 should use the previous version of this package.
-+  Remove =python-readability= support and just use =eww-readable=.  =eww-readable= seems to work so well that it seems unnecessary to bother with external tools.  Of course, this does require Emacs 25.1, so users on Emacs 24 may wish to use the previous version.
-
-** <2017-04-11>
-
-+ Add =org-protocol-capture-eww-readable=.  For Emacs 25.1 and up, this uses =eww='s built-in readability-style function instead of calling external Python scripts.
-
-** <2016-10-23 Sun>
-
-+ Add =org-protocol-capture-html-demote-times= variable, which controls how many times headings in captured pages are demoted.  This is handy if you use a sub-heading in your capture template, so you can make all the headings in captured pages lower than the lowest-level heading in your capture template.
-
-** <2016-10-05 Wed>
-
-+  Check Pandoc's no-wrap option lazily (upon first capture), and if Pandoc takes too long for some reason, try again next time a capture is run.
-+  If Pandoc does take too long, kill the buffer and process without prompting.
-+  Use ~sleep-for~ instead of ~sit-for~ to work around any potential issues with whatever "input" may interrupt ~sit-for~.
-
-Hopefully this puts issue #12 to rest for good.  Thanks to [[https://github.com/jguenther][@jguenther]] for his help fixing and reporting bugs.
-
-** <2016-10-03 Mon>
-
-+ Handle pages without titles in bookmarklet examples.  If a page lacks an HTML title, the string passed to =org-protocol= would have nothing where the title should go, and this would cause the capture to fail.  Now the bookmarklets will use =[untitled page]= instead of an empty string.  (No Elisp code changed, only the examples in the readme.)
-
-** <2016-10-01 Sat>
-
-+ Use a temp buffer for the Pandoc test, thanks to [[https://github.com/jguenther][@jguenther]].
-
-** <2016-09-29 Thu>
-
-+  Fix issue #12 (i.e. /really/ fix the =--no-wrap= deprecation), thanks to [[https://github.com/jguenther][@jguenther]].
-+  Require =cl= and use =cl-incf= instead of =incf=.
-
-** <2016-09-23 Fri>
-
-+ Fix for Pandoc versions =>== 1.16, which deprecates =--no-wrap= in favor of =--wrap=none=.
-
-** <2016-04-03 Sun>
-
-+ Add support for [[https://github.com/buriy/python-readability][python-readability]].
-+ Improve instructions.
-
-** <2016-03-23 Wed>
-
-+ Add URL downloading to the shell script.  Now you can run =org-protocol-capture-html.sh -u http://example.com= and it will download and capture the page.
-+ Add =org-capture= template to the readme.  This will make it much easier for new users.
 
 * Credits
 
@@ -420,3 +361,62 @@ However, most of the time, this is not a problem.
 ** Package for MELPA
 
 This would be nice.
+* Changelog :noexport_1:
+
+** <2019-05-12>
+
++  Python 2-3 compatibility fixes in =org-protocol-capture-html.sh=.  ([[https://github.com/alphapapa/org-protocol-capture-html/pull/31][#31]].  Thanks to [[https://github.com/samspills][Sam Pillsworth]].)
+
+** <2017-04-17>
+
++  Use [[https://github.com/magnars/s.el][s.el]].
++  Handle empty titles from =dom=.
++  Skip HTTP headers more reliably in the =eww-readable= support.
+
+** <2017-04-15>
+
++  Switch from old-style =org-protocol= links to the new-style ones used in Org 9.  *Note*: This requires updating existing bookmarklets to use the new-style links.  See the examples in the usage instructions.  Users who are unable to upgrade to Org 9 should use the previous version of this package.
++  Remove =python-readability= support and just use =eww-readable=.  =eww-readable= seems to work so well that it seems unnecessary to bother with external tools.  Of course, this does require Emacs 25.1, so users on Emacs 24 may wish to use the previous version.
+
+** <2017-04-11>
+
++ Add =org-protocol-capture-eww-readable=.  For Emacs 25.1 and up, this uses =eww='s built-in readability-style function instead of calling external Python scripts.
+
+** <2016-10-23 Sun>
+
++ Add =org-protocol-capture-html-demote-times= variable, which controls how many times headings in captured pages are demoted.  This is handy if you use a sub-heading in your capture template, so you can make all the headings in captured pages lower than the lowest-level heading in your capture template.
+
+** <2016-10-05 Wed>
+
++  Check Pandoc's no-wrap option lazily (upon first capture), and if Pandoc takes too long for some reason, try again next time a capture is run.
++  If Pandoc does take too long, kill the buffer and process without prompting.
++  Use ~sleep-for~ instead of ~sit-for~ to work around any potential issues with whatever "input" may interrupt ~sit-for~.
+
+Hopefully this puts issue #12 to rest for good.  Thanks to [[https://github.com/jguenther][@jguenther]] for his help fixing and reporting bugs.
+
+** <2016-10-03 Mon>
+
++ Handle pages without titles in bookmarklet examples.  If a page lacks an HTML title, the string passed to =org-protocol= would have nothing where the title should go, and this would cause the capture to fail.  Now the bookmarklets will use =[untitled page]= instead of an empty string.  (No Elisp code changed, only the examples in the readme.)
+
+** <2016-10-01 Sat>
+
++ Use a temp buffer for the Pandoc test, thanks to [[https://github.com/jguenther][@jguenther]].
+
+** <2016-09-29 Thu>
+
++  Fix issue #12 (i.e. /really/ fix the =--no-wrap= deprecation), thanks to [[https://github.com/jguenther][@jguenther]].
++  Require =cl= and use =cl-incf= instead of =incf=.
+
+** <2016-09-23 Fri>
+
++ Fix for Pandoc versions =>== 1.16, which deprecates =--no-wrap= in favor of =--wrap=none=.
+
+** <2016-04-03 Sun>
+
++ Add support for [[https://github.com/buriy/python-readability][python-readability]].
++ Improve instructions.
+
+** <2016-03-23 Wed>
+
++ Add URL downloading to the shell script.  Now you can run =org-protocol-capture-html.sh -u http://example.com= and it will download and capture the page.
++ Add =org-capture= template to the readme.  This will make it much easier for new users.
