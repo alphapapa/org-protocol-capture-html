@@ -58,7 +58,7 @@ Put =org-protocol-capture-html.el= in your =load-path= and add to your init file
 
 *** Capture template
 
-You need a suitable =org-capture= template. The default selection key is =w=, it mush murch what is in the browser-side script.
+You need a suitable =org-capture= template. The default selection key is =w=, it must match the script which would send the request.
 
 #+BEGIN_SRC elisp
 ("w" "Web site"
