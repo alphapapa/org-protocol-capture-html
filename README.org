@@ -52,14 +52,26 @@ Put =org-protocol-capture-html.el= in your =load-path= and add to your init file
 (require 'org-protocol-capture-html)
 #+END_SRC
 
-*** org-capture Template
+*** Capture template
 
-You need a suitable =org-capture= template.  I recommend this one.  Whatever you choose, the default selection key is =w=, so if you want to use a different key, you'll need to modify the script and the bookmarklets.
+You need a suitable =org-capture= template. The default selection key is =w=, it mush murch what is in the browser-side script.
 
 #+BEGIN_SRC elisp
-("w" "Web site" entry
-  (file "")
-  "* %a :website:\n\n%U %?\n\n%:initial")
+("w" "Web site"
+  entry (file+olp "~/org/inbox.org" "Subheading" "Web")
+  "* %a :website:\n:PROPERTIES:\n:ADDED: %u\nNOTE: %?\n:END:\n%:initial")
+#+END_SRC
+
+*Note:* Using =%:initial= instead o =%i= seems to handle multi-line content better.
+
+This will result in a capture like this:
+
+#+BEGIN_SRC org
+* [[http://orgmode.org/worg/org-contrib/org-protocol.html][org-protocol.el – Intercept calls from emacsclient to trigger custom actions]] :website:
+:PROPERTIES:
+:ADDED: [2020-01-14 Tue]
+:NOTE: Captures webpages and links from web, based on prior code and ideas from org-annotation-helper.el and org-browser-url.el.
+:END:
 #+END_SRC
 
 ** Bookmarklets
@@ -238,25 +250,6 @@ org-protocol-capture-html.sh -h "TODO Feed the cat!" -t i "He gets grouchy if I 
 
 *** 1. Configure Emacs
 
-
-**** Capture template
-
-You'll probably want to add a capture template something like this:
-
-#+BEGIN_SRC elisp
-  ("w" "Web site"
-   entry (file+olp "~/org/inbox.org" "Web")
-   "* %c :website:\n%U %?%:initial")
-#+END_SRC
-
-*Note:* Using =%:initial= instead of =%i= seems to handle multi-line content better.
-
-This will result in a capture like this:
-
-#+BEGIN_SRC org
-   * [[http://orgmode.org/worg/org-contrib/org-protocol.html][org-protocol.el – Intercept calls from emacsclient to trigger custom actions]] :website:
-   [2015-09-29 Tue 11:09] About org-protocol.el org-protocol.el is based on code and ideas from org-annotation-helper.el and org-browser-url.el.
-#+END_SRC
 
 *** 2. Configure Firefox
 
