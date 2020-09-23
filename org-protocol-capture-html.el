@@ -31,7 +31,7 @@
 ;;;; Require
 
 (require 'org-protocol)
-(require 'cl)
+(require 'cl-lib)
 (require 'subr-x)
 (require 's)
 
