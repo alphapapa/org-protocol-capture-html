@@ -1,5 +1,7 @@
 ;;; org-protocol-capture-html.el --- Capture HTML with org-protocol
 
+;; Package-Requires: ((emacs "26.1") (org "9.3"))
+
 ;;; Commentary:
 
 ;; This package captures Web pages into Org-mode using Pandoc to
@@ -31,7 +33,7 @@
 ;;;; Require
 
 (require 'org-protocol)
-(require 'cl)
+(require 'cl-lib)
 (require 'subr-x)
 (require 's)
 
@@ -103,7 +105,7 @@ Pandoc, converting HTML to Org-mode."
                    (match-string 1 url)))
          (title (or (org-protocol-capture-html--nbsp-to-space (string-trim (plist-get data :title))) ""))
          (content (or (org-protocol-capture-html--nbsp-to-space (string-trim (plist-get data :body))) ""))
-         (orglink (org-make-link-string
+         (orglink (org-link-make-string
                    url (if (string-match "[^[:space:]]" title) title url)))
          (org-capture-link-is-already-stored t)) ; avoid call to org-store-link
 
@@ -119,7 +121,7 @@ Pandoc, converting HTML to Org-mode."
           (message "Pandoc failed: %s" (buffer-string))
         (progn
           ;; Pandoc succeeded
-          (org-store-link-props :type type
+          (org-link-store-props :type type
                                 :annotation orglink
                                 :link url
                                 :description title
@@ -180,7 +182,7 @@ Pandoc, converting HTML to Org-mode."
                             (insert "**")
                             (end-of-line)))
                         (buffer-string)))
-             (orglink (org-make-link-string
+             (orglink (org-link-make-string
                        url (if (s-present? title) title url)))
              ;; Avoid call to org-store-link
              (org-capture-link-is-already-stored t))
@@ -189,7 +191,7 @@ Pandoc, converting HTML to Org-mode."
               (cons (list url title) org-stored-links))
         (kill-new orglink)
 
-        (org-store-link-props :type type
+        (org-link-store-props :type type
                               :annotation orglink
                               :link url
                               :description title
