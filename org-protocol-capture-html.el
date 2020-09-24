@@ -37,10 +37,15 @@
 
 ;;;; Vars
 
+(defgroup org-protocol-capture-html nil
+  "Capture HTML with org-protocol."
+  :group 'org-protocol
+  :group 'org)
+
 (defcustom org-protocol-capture-html-demote-times 1
   "How many times to demote headings in captured pages.
 You may want to increase this if you use a sub-heading in your capture template."
-  :group 'org-protocol-capture-html :type 'integer)
+  :type 'integer)
 
 ;;;; Test Pandoc
 
