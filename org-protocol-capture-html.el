@@ -47,6 +47,10 @@
 You may want to increase this if you use a sub-heading in your capture template."
   :type 'integer)
 
+(defcustom org-protocol-capture-html-pandoc-extra-args nil
+  "List of extra arguments to pass to pandoc (for example filters)."
+  :type '(repeat string))
+
 ;;;; Test Pandoc
 
 (defconst org-protocol-capture-html-pandoc-no-wrap-option nil
@@ -118,9 +122,11 @@ Pandoc, converting HTML to Org-mode."
 
     (with-temp-buffer
       (insert content)
-      (if (not (zerop (call-process-region
-                       (point-min) (point-max)
-                       "pandoc" t t nil "-f" "html" "-t" "org" org-protocol-capture-html-pandoc-no-wrap-option)))
+      (if (not (zerop (apply #'call-process-region
+                             (point-min) (point-max)
+                             "pandoc" t t nil "-f" "html" "-t" "org"
+                             org-protocol-capture-html-pandoc-no-wrap-option
+                             org-protocol-capture-html-pandoc-extra-args)))
           (message "Pandoc failed: %s" (buffer-string))
         (progn
           ;; Pandoc succeeded
