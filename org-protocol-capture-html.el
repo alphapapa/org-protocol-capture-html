@@ -1,5 +1,9 @@
 ;;; org-protocol-capture-html.el --- Capture HTML with org-protocol
 
+;; URL: https://github.com/alphapapa/org-protocol-capture-html
+;; Version: 0.1-pre
+;; Package-Requires: ((emacs "24.4"))
+
 ;;; Commentary:
 
 ;; This package captures Web pages into Org-mode using Pandoc to
@@ -31,7 +35,7 @@
 ;;;; Require
 
 (require 'org-protocol)
-(require 'cl)
+(require 'cl-lib)
 (require 'subr-x)
 (require 's)
 
@@ -46,8 +50,9 @@ You may want to increase this if you use a sub-heading in your capture template.
 
 (defconst org-protocol-capture-html-pandoc-no-wrap-option nil
   ;; Set this so it won't be unbound
-  "Option to pass to Pandoc to disable wrapping.  Pandoc >= 1.16
-deprecates `--no-wrap' in favor of `--wrap=none'.")
+  "Option to pass to Pandoc to disable wrapping.
+Pandoc >= 1.16 deprecates `--no-wrap' in favor of
+`--wrap=none'.")
 
 (defun org-protocol-capture-html--define-pandoc-wrap-const ()
   "Set `org-protocol-capture-html-pandoc-no-wrap-option'."
@@ -81,7 +86,7 @@ deprecates `--no-wrap' in favor of `--wrap=none'.")
 ;;;; Direct-to-Pandoc
 
 (defun org-protocol-capture-html--with-pandoc (data)
-  "Process an org-protocol://capture-html:// URL.
+  "Process an org-protocol://capture-html:// URL using DATA.
 
 This function is basically a copy of `org-protocol-do-capture', but
 it passes the captured content (not the URL or title) through
@@ -136,6 +141,8 @@ Pandoc, converting HTML to Org-mode."
 
 ;;;; eww-readable
 
+(defvar url-http-end-of-headers)
+
 (eval-when-compile
   ;; eww-readable only works on Emacs >=25.1, but I think it's better
   ;; to check for the actual symbols.  I think using
@@ -165,7 +172,7 @@ Pandoc, converting HTML to Org-mode."
                         (unless (= 0 (call-process-region (point-min) (point-max)
                                                           "pandoc" t t nil "-f" "html" "-t" "org"
                                                           org-protocol-capture-html-pandoc-no-wrap-option))
-                          (error "Pandoc failed."))
+                          (error "Pandoc failed"))
                         (save-excursion
                           ;; Remove DOS CR/LF line endings
                           (goto-char (point-min))
@@ -237,7 +244,7 @@ Returns list (HTML . TITLE)."
              (dom (with-temp-buffer
                     (insert html)
                     (libxml-parse-html-region (point-min) (point-max))))
-             (title (caddr (car (dom-by-tag dom 'title)))))
+             (title (cl-caddr (car (dom-by-tag dom 'title)))))
         (eww-score-readability dom)
         (cons (with-temp-buffer
                 (shr-dom-print (eww-highest-readability dom))
@@ -252,20 +259,22 @@ Returns list (HTML . TITLE)."
   ;; them to underlines instead of spaces, but this fixes it.
   (replace-regexp-in-string (rx "&nbsp;") " " s t t))
 
-(defun org-protocol-capture-html--do-capture ()
-  "Call `org-capture' and demote page headings in capture buffer."
-  (raise-frame)
-  (funcall 'org-capture nil template)
+(with-no-warnings
+  ;; Ignore warning about the dynamically scoped `template' variable.
+  (defun org-protocol-capture-html--do-capture ()
+    "Call `org-capture' and demote page headings in capture buffer."
+    (raise-frame)
+    (funcall 'org-capture nil template)
 
-  ;; Demote page headings in capture buffer to below the
-  ;; top-level Org heading
-  (save-excursion
-    (goto-char (point-min))
-    (re-search-forward (rx bol "*" (1+ space)) nil t) ; Skip 1st heading
-    (while (re-search-forward (rx bol "*" (1+ space)) nil t)
-      (dotimes (n org-protocol-capture-html-demote-times)
-        (org-demote-subtree)))))
+    ;; Demote page headings in capture buffer to below the
+    ;; top-level Org heading
+    (save-excursion
+      (goto-char (point-min))
+      (re-search-forward (rx bol "*" (1+ space)) nil t) ; Skip 1st heading
+      (while (re-search-forward (rx bol "*" (1+ space)) nil t)
+        (dotimes (n org-protocol-capture-html-demote-times)
+          (org-demote-subtree))))))
 
 (provide 'org-protocol-capture-html)
 
-;;; org-protocol-capture-html ends here
+;;; org-protocol-capture-html.el ends here
