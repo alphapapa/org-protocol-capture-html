@@ -1,8 +1,8 @@
-;;; org-protocol-capture-html.el --- Capture HTML with org-protocol
+;;; org-protocol-capture-html.el --- Capture HTML with org-protocol -*- lexical-binding: t -*-
 
 ;; URL: https://github.com/alphapapa/org-protocol-capture-html
 ;; Version: 0.1-pre
-;; Package-Requires: ((emacs "24.4"))
+;; Package-Requires: ((emacs "26.1"))
 
 ;;; Commentary:
 
@@ -45,6 +45,8 @@
   "How many times to demote headings in captured pages.
 You may want to increase this if you use a sub-heading in your capture template."
   :group 'org-protocol-capture-html :type 'integer)
+
+(defvar org-protocol-capture-html--current-template nil)
 
 ;;;; Test Pandoc
 
@@ -100,9 +102,8 @@ Pandoc, converting HTML to Org-mode."
 
   (unless org-protocol-capture-html-pandoc-no-wrap-option
     (org-protocol-capture-html--define-pandoc-wrap-const))
-
-  (let* ((template (or (plist-get data :template)
-                       org-protocol-default-template-key))
+  (let* ((org-protocol-capture-html--current-template (or (plist-get data :template)
+                                                          org-protocol-default-template-key))
          (url (org-protocol-sanitize-uri (plist-get data :url)))
          (type (if (string-match "^\\([a-z]+\\):" url)
                    (match-string 1 url)))
@@ -158,8 +159,8 @@ Pandoc, converting HTML to Org-mode."
       (unless org-protocol-capture-html-pandoc-no-wrap-option
         (org-protocol-capture-html--define-pandoc-wrap-const))
 
-      (let* ((template (or (plist-get data :template)
-                           org-protocol-default-template-key))
+      (let* ((org-protocol-capture-html--current-template (or (plist-get data :template)
+                                                              org-protocol-default-template-key))
              (url (org-protocol-sanitize-uri (plist-get data :url)))
              (type (if (string-match "^\\([a-z]+\\):" url)
                        (match-string 1 url)))
@@ -259,21 +260,19 @@ Returns list (HTML . TITLE)."
   ;; them to underlines instead of spaces, but this fixes it.
   (replace-regexp-in-string (rx "&nbsp;") " " s t t))
 
-(with-no-warnings
-  ;; Ignore warning about the dynamically scoped `template' variable.
-  (defun org-protocol-capture-html--do-capture ()
-    "Call `org-capture' and demote page headings in capture buffer."
-    (raise-frame)
-    (funcall 'org-capture nil template)
+(defun org-protocol-capture-html--do-capture ()
+  "Call `org-capture' and demote page headings in capture buffer."
+  (raise-frame)
+  (org-capture nil org-protocol-capture-html--current-template)
 
-    ;; Demote page headings in capture buffer to below the
-    ;; top-level Org heading
-    (save-excursion
-      (goto-char (point-min))
-      (re-search-forward (rx bol "*" (1+ space)) nil t) ; Skip 1st heading
-      (while (re-search-forward (rx bol "*" (1+ space)) nil t)
-        (dotimes (n org-protocol-capture-html-demote-times)
-          (org-demote-subtree))))))
+  ;; Demote page headings in capture buffer to below the
+  ;; top-level Org heading
+  (save-excursion
+    (goto-char (point-min))
+    (re-search-forward (rx bol "*" (1+ space)) nil t) ; Skip 1st heading
+    (while (re-search-forward (rx bol "*" (1+ space)) nil t)
+      (dotimes (_n org-protocol-capture-html-demote-times)
+        (org-demote-subtree)))))
 
 (provide 'org-protocol-capture-html)
 
