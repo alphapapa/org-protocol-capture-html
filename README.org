@@ -1,9 +1,5 @@
 #+PROPERTY: LOGGING nil
 
-#+BEGIN_HTML
-<a href=https://alphapapa.github.io/dont-tread-on-emacs/><img src="dont-tread-on-emacs-150.png" align="right"></a>
-#+END_HTML
-
 * org-protocol-capture-html                                        :noexport:
 
 org-protocol is awesome, but browsers do a pretty poor job of turning a page's HTML content into plain-text.  However, Pandoc supports converting /from/ HTML /to/ org-mode, so we can use it to turn HTML into Org-mode content!  It can even turn HTML tables into Org tables!
