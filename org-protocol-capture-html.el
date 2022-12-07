@@ -79,7 +79,9 @@ Pandoc >= 1.16 deprecates `--no-wrap' in favor of
                 (sleep-for 0.2)
                 (cl-incf checked)))
             (if (and (zerop (process-exit-status process))
-                     (not (string-match "--no-wrap is deprecated" (buffer-string))))
+                     (not (string-match
+                           (rx "--no-wrap " (or "is deprecated" "has been removed"))
+                           (buffer-string))))
                 "--no-wrap"
               "--wrap=none")))))
 
