@@ -41,10 +41,19 @@
 
 ;;;; Vars
 
+(defgroup org-protocol-capture-html nil
+  "Capture HTML with org-protocol."
+  :group 'org-protocol
+  :group 'org)
+
 (defcustom org-protocol-capture-html-demote-times 1
   "How many times to demote headings in captured pages.
 You may want to increase this if you use a sub-heading in your capture template."
-  :group 'org-protocol-capture-html :type 'integer)
+  :type 'integer)
+
+(defcustom org-protocol-capture-html-pandoc-extra-args nil
+  "List of extra arguments to pass to pandoc (for example filters)."
+  :type '(repeat string))
 
 ;;;; Test Pandoc
 
@@ -118,9 +127,11 @@ Pandoc, converting HTML to Org-mode."
 
     (with-temp-buffer
       (insert content)
-      (if (not (zerop (call-process-region
-                       (point-min) (point-max)
-                       "pandoc" t t nil "-f" "html" "-t" "org" org-protocol-capture-html-pandoc-no-wrap-option)))
+      (if (not (zerop (apply #'call-process-region
+                             (point-min) (point-max)
+                             "pandoc" t t nil "-f" "html" "-t" "org"
+                             org-protocol-capture-html-pandoc-no-wrap-option
+                             org-protocol-capture-html-pandoc-extra-args)))
           (message "Pandoc failed: %s" (buffer-string))
         (progn
           ;; Pandoc succeeded
